@@ -1,10 +1,15 @@
-
-import { useEffect } from 'react';
-import { Chrome } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAppSharing } from '@/contexts/AppContext';
-import { login, getGoogleProfile } from '@/lib/api';
+import { useEffect } from "react";
+import { Chrome } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useAppSharing } from "@/contexts/AppContext";
+import { login, getGoogleProfile } from "@/lib/api";
 
 export const LoginSection = () => {
   const { baseUrl, setProfileData, setIsLoading } = useAppSharing();
@@ -13,12 +18,17 @@ export const LoginSection = () => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.xid) {
         const xid = event.data.xid;
-        const isProduction = window.location.hostname.includes('seospyder.io');
-        
+        const isProduction = window.location.hostname.includes("seospyder.io");
+        console.log("XID received:", event.data);
+
         if (isProduction) {
-          document.cookie = `xid=${xid}; path=/; max-age=${15 * 24 * 60 * 60}; Secure; SameSite=None; domain=.seospyder.io`;
+          document.cookie = `xid=${xid}; path=/; max-age=${
+            15 * 24 * 60 * 60
+          }; Secure; SameSite=None; domain=.seospyder.io`;
         } else {
-          document.cookie = `xid=${xid}; path=/; max-age=${15 * 24 * 60 * 60}; SameSite=None`;
+          document.cookie = `xid=${xid}; path=/; max-age=${
+            15 * 24 * 60 * 60
+          }; Secure; SameSite=None`;
         }
       }
 
@@ -43,7 +53,9 @@ export const LoginSection = () => {
             <Chrome className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">SEO Spider</h1>
-          <p className="text-gray-600">Optimize your blog pages with AI-powered insights</p>
+          <p className="text-gray-600">
+            Optimize your blog pages with AI-powered insights
+          </p>
         </div>
 
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
@@ -54,7 +66,7 @@ export const LoginSection = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button 
+            <Button
               onClick={handleGoogleLogin}
               className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
               size="lg"
@@ -62,7 +74,7 @@ export const LoginSection = () => {
               <Chrome className="w-5 h-5 mr-3" />
               Sign in with Google
             </Button>
-            
+
             <div className="text-center text-sm text-gray-500 mt-4">
               <p>Connect your Google Analytics and Search Console</p>
               <p>to start optimizing your content</p>
@@ -71,7 +83,9 @@ export const LoginSection = () => {
         </Card>
 
         <div className="mt-8 text-center text-xs text-gray-400">
-          <p>By signing in, you agree to our Terms of Service and Privacy Policy</p>
+          <p>
+            By signing in, you agree to our Terms of Service and Privacy Policy
+          </p>
         </div>
       </div>
     </div>
