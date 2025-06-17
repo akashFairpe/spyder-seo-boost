@@ -16,6 +16,14 @@ interface ReportData {
   content?: {
     rendered: string;
   };
+  title?: {
+    rendered: string;
+  };
+  link?: string;
+  details?: {
+    countries?: any[];
+    queries?: any[];
+  };
 }
 
 interface WebsiteData {
@@ -55,7 +63,7 @@ interface AppSharingContextType {
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   promptData: PromptData;
-  setPromptData: (data: PromptData) => void;
+  setPromptData: React.Dispatch<React.SetStateAction<PromptData>>;
 }
 
 const AppSharingContext = createContext<AppSharingContextType | undefined>(undefined);
