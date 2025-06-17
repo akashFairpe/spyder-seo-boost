@@ -70,7 +70,7 @@ export const login = (baseUrl: string, setIsLoading: (loading: boolean) => void)
 
 export const advanceLogin = (baseUrl: string, setIsLoading: (loading: boolean) => void) => {
   setIsLoading(true);
-  fetch(`${baseUrl}/api/auth/advance`, {
+  fetch(`${baseUrl}/api/auth/v2`, {
     method: "GET",
     credentials: "include",
     headers: {
