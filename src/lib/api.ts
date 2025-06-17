@@ -310,3 +310,31 @@ export const wordpressLogin = (
     console.log("WordPress login error", err);
   });
 };
+
+export const getPromptData = async (baseUrl: string, selectedDomain: string, link: string, id: string, prompt: string) => {
+  try {
+    const response = await fetch(`${baseUrl}/api/get-prompt`, {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ 
+        websiteUrl: selectedDomain, 
+        websitePageUrl: link, 
+        prompt: prompt, 
+        id: id 
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const res = await response.json();
+    return res;
+  } catch (err) {
+    console.error("Error fetching prompt data:", err);
+    return null;
+  }
+};

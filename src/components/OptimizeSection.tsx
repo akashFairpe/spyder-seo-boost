@@ -1,4 +1,3 @@
-
 import { ArrowLeft, TrendingUp, Target, Lightbulb, User, Lock, AlertCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +6,14 @@ import { Label } from '@/components/ui/label';
 import { useAppSharing } from '@/contexts/AppContext';
 import { useEffect, useState } from 'react';
 import { getWordPressPage, wordpressLogin } from '@/lib/api';
+import FaqPrompt from './prompts/FaqPrompt';
+import TablePrompt from './prompts/TablePrompt';
+import BulletPrompt from './prompts/BulletPrompt';
+import TableOfContentsPrompt from './prompts/TableOfContentsPrompt';
+import NumberedListPrompt from './prompts/NumberedListPrompt';
+import DataPrompt from './prompts/DataPrompt';
+import SingleFocusedKeywordPrompt from './prompts/SingleFocusedKeywordPrompt';
+import ImageGeneratorWithSelector from './prompts/ImageGeneratorWithSelector';
 
 export const OptimizeSection = () => {
   const { 
@@ -148,6 +155,10 @@ export const OptimizeSection = () => {
                 >
                   Generate FAQ's
                 </Button>
+                {showfaqPrompt && (
+                  <FaqPrompt report={currentReport} id={gptId} />
+                )}
+
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
@@ -155,6 +166,10 @@ export const OptimizeSection = () => {
                 >
                   Generate Tables
                 </Button>
+                {showTablePrompt && (
+                  <TablePrompt report={currentReport} id={gptId} />
+                )}
+
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
@@ -162,6 +177,10 @@ export const OptimizeSection = () => {
                 >
                   Generate Bullet Points
                 </Button>
+                {showBulletPrompt && (
+                  <BulletPrompt report={currentReport} id={gptId} />
+                )}
+
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
@@ -169,6 +188,10 @@ export const OptimizeSection = () => {
                 >
                   Table of Contents
                 </Button>
+                {showTableOfContentsPrompt && (
+                  <TableOfContentsPrompt report={currentReport} id={gptId} />
+                )}
+
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
@@ -176,6 +199,10 @@ export const OptimizeSection = () => {
                 >
                   Numbered List
                 </Button>
+                {showNumberedListPrompt && (
+                  <NumberedListPrompt report={currentReport} id={gptId} />
+                )}
+
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
@@ -183,6 +210,10 @@ export const OptimizeSection = () => {
                 >
                   Data-Based Content
                 </Button>
+                {showDataPrompt && (
+                  <DataPrompt content={currentReport} report={selectedReport} id={gptId} />
+                )}
+
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
@@ -190,6 +221,10 @@ export const OptimizeSection = () => {
                 >
                   Single Keyword Focus
                 </Button>
+                {showSingleKey && (
+                  <SingleFocusedKeywordPrompt report={selectedReport} id={gptId} />
+                )}
+
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
@@ -197,6 +232,9 @@ export const OptimizeSection = () => {
                 >
                   Generate Images
                 </Button>
+                {showImgGen && (
+                  <ImageGeneratorWithSelector content={currentReport} report={selectedReport} id={gptId} />
+                )}
               </CardContent>
             </Card>
 
