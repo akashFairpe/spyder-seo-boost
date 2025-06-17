@@ -28,7 +28,7 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
 
   const getPrompts = async (baseUrl: string, prompt: string, contentData: string, aiModel: string) => {
     try {
-      const response = await fetch(`${baseUrl}/api/get-prompts`, {
+      const response = await fetch(`${baseUrl}/api/get-img-prompts`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify({ prompt, contentData, aiModel }),
