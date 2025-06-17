@@ -1,42 +1,34 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, Globe, TrendingUp, BarChart3, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAppSharing } from '@/contexts/AppContext';
-import { GoogleConnectModal } from './GoogleConnectModal';
+import { getGoogleData, consoleReport } from '@/lib/api';
+import { DataPresentation } from './DataPresentation';
 
 export const DashboardContainer = () => {
-  const [showConnectModal, setShowConnectModal] = useState(false);
-  const [domains] = useState([
-    {
-      id: 1,
-      domain: 'example.com',
-      status: 'connected',
-      pages: 156,
-      clicks: 1844,
-      impressions: 252053,
-      ctr: 0.01,
-      position: 37.29
-    },
-    {
-      id: 2,
-      domain: 'blog.example.com',
-      status: 'connected',
-      pages: 89,
-      clicks: 892,
-      impressions: 45620,
-      ctr: 0.02,
-      position: 24.5
-    }
-  ]);
+  const { 
+    baseUrl, 
+    setReportData, 
+    reportData, 
+    selectedDomain, 
+    setSelectedDomain, 
+    setIsLoading,
+    websiteList,
+    setWebsiteList,
+    showMessage,
+    setShowMessage
+  } = useAppSharing();
 
-  const { setSelectedDomain } = useAppSharing();
+  const fetchGoogleData = () => {
+    getGoogleData(baseUrl, setWebsiteList, setIsLoading, setShowMessage);
+  };
 
-  const handleDomainClick = (domain: any) => {
-    setSelectedDomain(domain.domain);
-    // Navigate to domain details
+  const getReport = (siteUrl: string) => {
+    consoleReport(baseUrl, siteUrl, setReportData, setIsLoading, siteUrl);
+    setSelectedDomain(siteUrl);
   };
 
   return (
@@ -58,128 +50,79 @@ export const DashboardContainer = () => {
               </CardDescription>
             </div>
             <Button 
-              onClick={() => setShowConnectModal(true)}
+              onClick={fetchGoogleData}
               className="bg-blue-600 hover:bg-blue-700"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Connect Services
+              Connect Google Analytics and Search Console
             </Button>
           </div>
         </CardHeader>
       </Card>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Domains</CardTitle>
-            <Globe className="h-4 w-4 text-muted-foreground" />
+      {/* Website List */}
+      {websiteList.length > 0 && (
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Connected Websites</CardTitle>
+            <CardDescription>
+              Click on any website to fetch its data from Google Search Console
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{domains.length}</div>
-            <p className="text-xs text-muted-foreground">Connected websites</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Clicks</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {domains.reduce((sum, domain) => sum + domain.clicks, 0).toLocaleString()}
+            <div className="flex flex-wrap gap-3">
+              {websiteList.map((site, index) => (
+                <Button
+                  key={index}
+                  onClick={() => getReport(site.siteUrl)}
+                  variant={selectedDomain === site.siteUrl ? "default" : "outline"}
+                  className="flex items-center gap-2"
+                >
+                  <Globe className="w-4 h-4" />
+                  {site.siteUrl}
+                  <Badge variant="secondary" className="ml-2">
+                    {site.permissionLevel}
+                  </Badge>
+                </Button>
+              ))}
             </div>
-            <p className="text-xs text-muted-foreground">Last 28 days</p>
           </CardContent>
         </Card>
+      )}
 
+      {/* Message Display */}
+      {showMessage && showMessage.status && (
+        <Card className="mb-8 bg-yellow-50 border-yellow-200">
+          <CardContent className="pt-6">
+            <div className="text-center text-yellow-800">
+              {showMessage.message}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Data Presentation */}
+      {reportData && reportData.length > 0 && (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Impressions</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5" />
+              SEO Performance Data
+              {selectedDomain && (
+                <Badge variant="outline" className="ml-2">
+                  {selectedDomain}
+                </Badge>
+              )}
+            </CardTitle>
+            <CardDescription>
+              Click "Optimize" on any page to get AI-powered SEO recommendations
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {domains.reduce((sum, domain) => sum + domain.impressions, 0).toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground">Search visibility</p>
+            <DataPresentation />
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Position</CardTitle>
-            <Search className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {(domains.reduce((sum, domain) => sum + domain.position, 0) / domains.length).toFixed(1)}
-            </div>
-            <p className="text-xs text-muted-foreground">Search ranking</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Connected Domains */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Connected Domains</CardTitle>
-          <CardDescription>
-            Your websites connected to Google Analytics and Search Console
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {domains.map((domain) => (
-              <div
-                key={domain.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-                onClick={() => handleDomainClick(domain)}
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">{domain.domain}</h3>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">
-                        {domain.status}
-                      </Badge>
-                      <span className="text-sm text-gray-500">{domain.pages} pages</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-6 text-sm">
-                  <div className="text-center">
-                    <div className="font-medium">{domain.clicks.toLocaleString()}</div>
-                    <div className="text-gray-500">Clicks</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="font-medium">{domain.impressions.toLocaleString()}</div>
-                    <div className="text-gray-500">Impressions</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="font-medium">{(domain.ctr * 100).toFixed(2)}%</div>
-                    <div className="text-gray-500">CTR</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="font-medium">{domain.position}</div>
-                    <div className="text-gray-500">Position</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <GoogleConnectModal 
-        open={showConnectModal} 
-        onOpenChange={setShowConnectModal} 
-      />
+      )}
     </div>
   );
 };

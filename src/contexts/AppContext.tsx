@@ -12,6 +12,11 @@ interface ReportData {
   data: any;
 }
 
+interface WebsiteData {
+  siteUrl: string;
+  permissionLevel: string;
+}
+
 interface PromptData {
   faqData: string;
   tableData: string;
@@ -35,6 +40,10 @@ interface AppSharingContextType {
   setCurrentReport: (report: ReportData | null) => void;
   selectedDomain: string | null;
   setSelectedDomain: (domain: string | null) => void;
+  websiteList: WebsiteData[];
+  setWebsiteList: (sites: WebsiteData[]) => void;
+  showMessage: { message: string; status: boolean } | null;
+  setShowMessage: (message: { message: string; status: boolean } | null) => void;
   errorMsg: string | null;
   setErrorMsg: (msg: string | null) => void;
   isLoading: boolean;
@@ -56,6 +65,11 @@ export const AppSharingProvider = ({ children }: AppSharingProviderProps) => {
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
   const [currentReport, setCurrentReport] = useState<ReportData | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
+  const [websiteList, setWebsiteList] = useState<WebsiteData[]>([]);
+  const [showMessage, setShowMessage] = useState<{ message: string; status: boolean } | null>({
+    message: "Click the button above to fetch your data.",
+    status: true
+  });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [promptData, setPromptData] = useState<PromptData>({
@@ -81,6 +95,10 @@ export const AppSharingProvider = ({ children }: AppSharingProviderProps) => {
     setCurrentReport,
     selectedDomain,
     setSelectedDomain,
+    websiteList,
+    setWebsiteList,
+    showMessage,
+    setShowMessage,
     errorMsg,
     setErrorMsg,
     isLoading,
