@@ -8,8 +8,14 @@ interface ProfileData {
 
 interface ReportData {
   id: string;
-  title: string;
-  data: any;
+  pageUrl: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+  content?: {
+    rendered: string;
+  };
 }
 
 interface WebsiteData {
