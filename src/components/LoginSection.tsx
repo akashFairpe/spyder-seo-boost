@@ -26,6 +26,7 @@ export const LoginSection = () => {
             15 * 24 * 60 * 60
           }; Secure; SameSite=None; domain=.seospyder.io`;
         } else {
+          document.cookie = `xid=${xid}; path=/; max-age=${15 * 24 * 60 * 60};Secure; SameSite=None`;
           document.cookie = `xid=${xid}; path=/; max-age=${
             15 * 24 * 60 * 60
           }; Secure; SameSite=None`;
@@ -53,9 +54,7 @@ export const LoginSection = () => {
             <Chrome className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">SEO Spider</h1>
-          <p className="text-gray-600">
-            Optimize your blog pages with AI-powered insights
-          </p>
+          <p className="text-gray-600">Optimize your blog pages with AI-powered insights</p>
         </div>
 
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
