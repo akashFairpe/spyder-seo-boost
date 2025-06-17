@@ -1,4 +1,3 @@
-
 const googleAuth = (authUrl: string) => {
   const popup = window.open(
     authUrl,
@@ -194,5 +193,120 @@ const addAiPath = (
   })
   .catch(err => {
     setReportData(data);
+  });
+};
+
+export const getWordPressPage = (
+  baseUrl: string, 
+  wpUrl: string, 
+  setCurrentReport: (data: any) => void, 
+  selectedDomain: string, 
+  setIsAuthenticated: (auth: boolean) => void, 
+  setNoContent: (noContent: boolean) => void, 
+  setIsLoading: (loading: boolean) => void, 
+  id: string
+) => {
+  setIsLoading(true);
+  fetch(`${baseUrl}/api/wordpress/getwebpage`, {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify({ wpUrl, selectedDomain }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  .then(response => response.json())
+  .then(res => {
+    setIsLoading(false);
+    if (res.data) {
+      setCurrentReport(res.data);
+      setIsAuthenticated(true);
+      setNoContent(false);
+      PageDataUrl(baseUrl, res.data, id);
+    } else if (res.wordpressCredential) {
+      setIsAuthenticated(false);
+      setNoContent(false);
+    } else {
+      setNoContent(true);
+    }
+  })
+  .catch(error => {
+    setIsLoading(false);
+    console.error('WordPress page fetch error:', error);
+  });
+};
+
+const PageDataUrl = (baseUrl: string, data: any, id: string) => {
+  fetch(`${baseUrl}/api/get-pre-signed-url`, {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify({ id }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  .then(response => response.json())
+  .then(res => {
+    const pageData = data?.content?.rendered;
+    const { fileUrl } = res;
+    
+    // Extract text content from HTML
+    const element = document.createElement('div');
+    element.innerHTML = pageData;
+    const textContent = element.innerText || element.textContent;
+    
+    // Convert text to a Blob
+    const textBlob = new Blob([textContent], { type: 'text/plain' });
+    
+    if (fileUrl) {
+      uploadTxtToPresignedUrl(fileUrl, textBlob);
+    }
+  })
+  .catch(error => console.error("Error fetching pre-signed URL:", error));
+};
+
+const uploadTxtToPresignedUrl = async (presignedUrl: string, textBlob: Blob) => {
+  try {
+    const response = await fetch(presignedUrl, {
+      method: "PUT",
+      body: textBlob,
+      headers: {
+        'Content-Type': 'text/plain',
+      }
+    });
+    
+    if (response.ok) {
+      console.log("TXT file uploaded successfully");
+    } else {
+      console.error("Failed to upload TXT file:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error uploading TXT file:", error);
+  }
+};
+
+export const wordpressLogin = (
+  baseUrl: string, 
+  wName: string, 
+  wPassword: string, 
+  selectedDomain: string, 
+  setWplogged: (logged: boolean) => void
+) => {
+  fetch(`${baseUrl}/api/wordpress/login`, {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify({ wName, wPassword, selectedDomain }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  .then(response => response.json())
+  .then(res => {
+    if (res.state) {
+      setWplogged(true);
+    }
+  })
+  .catch(err => {
+    console.log("WordPress login error", err);
   });
 };
