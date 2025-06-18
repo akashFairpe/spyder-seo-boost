@@ -130,7 +130,7 @@ export const OptimizeSection = () => {
               </CardHeader>
               <CardContent>
                 <div 
-                  className="prose max-w-none"
+                  className="prose prose-sm max-w-none overflow-y-auto max-h-96 border rounded-lg p-4 bg-gray-50"
                   dangerouslySetInnerHTML={{ __html: currentReport.content?.rendered || '' }}
                 />
               </CardContent>
@@ -147,7 +147,7 @@ export const OptimizeSection = () => {
                 </CardTitle>
                 <CardDescription>Choose optimization type</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 max-h-screen overflow-y-auto">
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
