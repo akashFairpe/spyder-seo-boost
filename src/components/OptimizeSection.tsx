@@ -36,15 +36,8 @@ export const OptimizeSection = () => {
   const [noContent, setNoContent] = useState(false);
   const [gptId, setGptId] = useState('');
 
-  // Optimization prompt states
-  const [showfaqPrompt, setShowfaqPrompt] = useState(false);
-  const [showTablePrompt, setShowTablePrompt] = useState(false);
-  const [showBulletPrompt, setShowBulletPrompt] = useState(false);
-  const [showTableOfContentsPrompt, setShowTableOfContentsPrompt] = useState(false);
-  const [showNumberedListPrompt, setShowNumberedListPrompt] = useState(false);
-  const [showDataPrompt, setShowDataPrompt] = useState(false);
-  const [showSingleKey, setShowSingleKey] = useState(false);
-  const [showImgGen, setShowImgGen] = useState(false);
+  // Single state to track which prompt is active
+  const [activePrompt, setActivePrompt] = useState<string | null>(null);
 
   const initFn = () => {
     const wpUrl = selectedReport?.pageUrl;
@@ -76,6 +69,7 @@ export const OptimizeSection = () => {
   const handleClose = () => {
     setSelectedReport(null);
     setCurrentReport(null);
+    setActivePrompt(null);
     setPromptData({
       faqData: "",
       tableData: "",
@@ -86,6 +80,21 @@ export const OptimizeSection = () => {
       SingleData: ""
     });
   };
+
+  const handlePromptToggle = (promptType: string) => {
+    setActivePrompt(activePrompt === promptType ? null : promptType);
+  };
+
+  const optimizationOptions = [
+    { key: 'faq', label: 'Generate FAQ\'s', hasData: !!promptData.faqData },
+    { key: 'table', label: 'Generate Tables', hasData: !!promptData.tableData },
+    { key: 'bullet', label: 'Generate Bullet Points', hasData: !!promptData.bulletData },
+    { key: 'tableOfContents', label: 'Table of Contents', hasData: !!promptData.tableContentData },
+    { key: 'numberedList', label: 'Numbered List', hasData: !!promptData.numberListData },
+    { key: 'data', label: 'Data-Based Content', hasData: !!promptData.basedOnData },
+    { key: 'singleKey', label: 'Single Keyword Focus', hasData: !!promptData.SingleData },
+    { key: 'imgGen', label: 'Generate Images', hasData: false },
+  ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -121,7 +130,7 @@ export const OptimizeSection = () => {
       {/* Content Display */}
       {currentReport && (
         <div className="space-y-6">
-          {/* Page Content - Full height, no max-height restriction */}
+          {/* Page Content - No max height restriction */}
           <Card>
             <CardHeader>
               <CardTitle>Page Content</CardTitle>
@@ -173,7 +182,7 @@ export const OptimizeSection = () => {
             </CardContent>
           </Card>
 
-          {/* AI Optimization Options - Moved below content */}
+          {/* AI Optimization Options */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -184,102 +193,58 @@ export const OptimizeSection = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => setShowfaqPrompt(!showfaqPrompt)}
-                >
-                  Generate FAQ's
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => setShowTablePrompt(!showTablePrompt)}
-                >
-                  Generate Tables
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => setShowBulletPrompt(!showBulletPrompt)}
-                >
-                  Generate Bullet Points
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => setShowTableOfContentsPrompt(!showTableOfContentsPrompt)}
-                >
-                  Table of Contents
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => setShowNumberedListPrompt(!showNumberedListPrompt)}
-                >
-                  Numbered List
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => setShowDataPrompt(!showDataPrompt)}
-                >
-                  Data-Based Content
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => setShowSingleKey(!showSingleKey)}
-                >
-                  Single Keyword Focus
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => setShowImgGen(!showImgGen)}
-                >
-                  Generate Images
-                </Button>
+                {optimizationOptions.map((option) => (
+                  <Button 
+                    key={option.key}
+                    variant={activePrompt === option.key ? "default" : "outline"}
+                    className={`w-full justify-start relative ${
+                      activePrompt === option.key ? 'bg-blue-600 text-white' : ''
+                    }`}
+                    onClick={() => handlePromptToggle(option.key)}
+                  >
+                    {option.label}
+                    {option.hasData && (
+                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                    )}
+                  </Button>
+                ))}
               </div>
 
-              {/* Prompt Components */}
-              {showfaqPrompt && (
-                <FaqPrompt report={currentReport} id={gptId} />
-              )}
+              {/* Active Prompt Component */}
+              {activePrompt && (
+                <div className="mt-6 border-t pt-4">
+                  {activePrompt === 'faq' && (
+                    <FaqPrompt report={currentReport} id={gptId} />
+                  )}
 
-              {showTablePrompt && (
-                <TablePrompt report={currentReport} id={gptId} />
-              )}
+                  {activePrompt === 'table' && (
+                    <TablePrompt report={currentReport} id={gptId} />
+                  )}
 
-              {showBulletPrompt && (
-                <BulletPrompt report={currentReport} id={gptId} />
-              )}
+                  {activePrompt === 'bullet' && (
+                    <BulletPrompt report={currentReport} id={gptId} />
+                  )}
 
-              {showTableOfContentsPrompt && (
-                <TableOfContentsPrompt report={currentReport} id={gptId} />
-              )}
+                  {activePrompt === 'tableOfContents' && (
+                    <TableOfContentsPrompt report={currentReport} id={gptId} />
+                  )}
 
-              {showNumberedListPrompt && (
-                <NumberedListPrompt report={currentReport} id={gptId} />
-              )}
+                  {activePrompt === 'numberedList' && (
+                    <NumberedListPrompt report={currentReport} id={gptId} />
+                  )}
 
-              {showDataPrompt && (
-                <DataPrompt content={currentReport} report={selectedReport} id={gptId} />
-              )}
+                  {activePrompt === 'data' && (
+                    <DataPrompt content={currentReport} report={selectedReport} id={gptId} />
+                  )}
 
-              {showSingleKey && (
-                <SingleFocusedKeywordPrompt report={selectedReport} id={gptId} />
-              )}
+                  {activePrompt === 'singleKey' && (
+                    <SingleFocusedKeywordPrompt report={selectedReport} id={gptId} />
+                  )}
 
-              {showImgGen && (
-                <ImageGeneratorWithSelector content={currentReport} report={selectedReport} id={gptId} />
+                  {activePrompt === 'imgGen' && (
+                    <ImageGeneratorWithSelector content={currentReport} report={selectedReport} id={gptId} />
+                  )}
+                </div>
               )}
             </CardContent>
           </Card>
