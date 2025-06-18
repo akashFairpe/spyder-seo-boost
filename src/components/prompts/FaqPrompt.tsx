@@ -63,6 +63,11 @@ const FaqPrompt = ({ report, id }: FaqPromptProps) => {
     const prompt = `You are an SEO content strategist. When enriching the content, avoid referencing source links or related sources as tooltips, and ensure all information is unique and not reused from other websites. Based on the content of the following blog post, generate a set of frequently asked questions (FAQs) along with their answers. Your goal is to enhance the SEO value of the post by addressing real user queries related to the topic. Guidelines: 1. Extract relevant, natural-sounding questions that readers may search on Google. 2. Provide concise and informative answers in a tone that matches the original article. 3. Include at least 4–6 FAQs covering a mix of beginner and advanced-level concerns. 4. Use keywords from the article context where appropriate without stuffing. 5. Ensure each FAQ can be directly inserted into the blog post as a standalone section. Assume this is the blog's title: ${report.title.rendered}, ${selectedOptions.join(", ")} . Generate only the new FAQ content that can be added to the existing article.`;
 
     let generatedData = await getPromptData(baseUrl, selectedDomain, report?.link, id, prompt);
+    
+    // Add debug logging
+    console.log("Generated FAQ data:", generatedData);
+    console.log("Type of generated data:", typeof generatedData);
+    
     setPromptData((prev) => ({
       ...prev,
       faqData: generatedData,
