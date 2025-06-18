@@ -120,34 +120,70 @@ export const OptimizeSection = () => {
 
       {/* Content Display */}
       {currentReport && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Page Content</CardTitle>
-                <CardDescription>WordPress page content analysis</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div 
-                  className="prose prose-sm max-w-none overflow-y-auto max-h-96 border rounded-lg p-4 bg-gray-50"
-                  dangerouslySetInnerHTML={{ __html: currentReport.content?.rendered || '' }}
-                />
-              </CardContent>
-            </Card>
-          </div>
+        <div className="space-y-6">
+          {/* Page Content - Full height, no max-height restriction */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Page Content</CardTitle>
+              <CardDescription>WordPress page content analysis</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div 
+                className="prose prose-sm max-w-none border rounded-lg p-4 bg-gray-50"
+                dangerouslySetInnerHTML={{ __html: currentReport.content?.rendered || '' }}
+              />
+            </CardContent>
+          </Card>
 
-          {/* Optimization Options */}
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Lightbulb className="w-4 h-4 text-orange-600" />
-                  AI Optimization
-                </CardTitle>
-                <CardDescription>Choose optimization type</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2 max-h-screen overflow-y-auto">
+          {/* Performance Metrics */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-green-600" />
+                Performance Metrics
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Clicks</span>
+                    <span>{selectedReport?.clicks || 0}</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Impressions</span>
+                    <span>{selectedReport?.impressions || 0}</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>CTR</span>
+                    <span>{selectedReport?.ctr?.toFixed(2) || '0.00'}%</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Position</span>
+                    <span>{selectedReport?.position?.toFixed(1) || '0.0'}</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* AI Optimization Options - Moved below content */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lightbulb className="w-4 h-4 text-orange-600" />
+                AI Optimization
+              </CardTitle>
+              <CardDescription>Choose optimization type</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
@@ -155,9 +191,6 @@ export const OptimizeSection = () => {
                 >
                   Generate FAQ's
                 </Button>
-                {showfaqPrompt && (
-                  <FaqPrompt report={currentReport} id={gptId} />
-                )}
 
                 <Button 
                   variant="outline" 
@@ -166,9 +199,6 @@ export const OptimizeSection = () => {
                 >
                   Generate Tables
                 </Button>
-                {showTablePrompt && (
-                  <TablePrompt report={currentReport} id={gptId} />
-                )}
 
                 <Button 
                   variant="outline" 
@@ -177,9 +207,6 @@ export const OptimizeSection = () => {
                 >
                   Generate Bullet Points
                 </Button>
-                {showBulletPrompt && (
-                  <BulletPrompt report={currentReport} id={gptId} />
-                )}
 
                 <Button 
                   variant="outline" 
@@ -188,9 +215,6 @@ export const OptimizeSection = () => {
                 >
                   Table of Contents
                 </Button>
-                {showTableOfContentsPrompt && (
-                  <TableOfContentsPrompt report={currentReport} id={gptId} />
-                )}
 
                 <Button 
                   variant="outline" 
@@ -199,9 +223,6 @@ export const OptimizeSection = () => {
                 >
                   Numbered List
                 </Button>
-                {showNumberedListPrompt && (
-                  <NumberedListPrompt report={currentReport} id={gptId} />
-                )}
 
                 <Button 
                   variant="outline" 
@@ -210,9 +231,6 @@ export const OptimizeSection = () => {
                 >
                   Data-Based Content
                 </Button>
-                {showDataPrompt && (
-                  <DataPrompt content={currentReport} report={selectedReport} id={gptId} />
-                )}
 
                 <Button 
                   variant="outline" 
@@ -221,9 +239,6 @@ export const OptimizeSection = () => {
                 >
                   Single Keyword Focus
                 </Button>
-                {showSingleKey && (
-                  <SingleFocusedKeywordPrompt report={selectedReport} id={gptId} />
-                )}
 
                 <Button 
                   variant="outline" 
@@ -232,49 +247,42 @@ export const OptimizeSection = () => {
                 >
                   Generate Images
                 </Button>
-                {showImgGen && (
-                  <ImageGeneratorWithSelector content={currentReport} report={selectedReport} id={gptId} />
-                )}
-              </CardContent>
-            </Card>
+              </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-green-600" />
-                  Performance Metrics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Clicks</span>
-                      <span>{selectedReport?.clicks || 0}</span>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Impressions</span>
-                      <span>{selectedReport?.impressions || 0}</span>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>CTR</span>
-                      <span>{selectedReport?.ctr?.toFixed(2) || '0.00'}%</span>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Position</span>
-                      <span>{selectedReport?.position?.toFixed(1) || '0.0'}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              {/* Prompt Components */}
+              {showfaqPrompt && (
+                <FaqPrompt report={currentReport} id={gptId} />
+              )}
+
+              {showTablePrompt && (
+                <TablePrompt report={currentReport} id={gptId} />
+              )}
+
+              {showBulletPrompt && (
+                <BulletPrompt report={currentReport} id={gptId} />
+              )}
+
+              {showTableOfContentsPrompt && (
+                <TableOfContentsPrompt report={currentReport} id={gptId} />
+              )}
+
+              {showNumberedListPrompt && (
+                <NumberedListPrompt report={currentReport} id={gptId} />
+              )}
+
+              {showDataPrompt && (
+                <DataPrompt content={currentReport} report={selectedReport} id={gptId} />
+              )}
+
+              {showSingleKey && (
+                <SingleFocusedKeywordPrompt report={selectedReport} id={gptId} />
+              )}
+
+              {showImgGen && (
+                <ImageGeneratorWithSelector content={currentReport} report={selectedReport} id={gptId} />
+              )}
+            </CardContent>
+          </Card>
         </div>
       )}
 
@@ -348,9 +356,6 @@ export const OptimizeSection = () => {
           </CardContent>
         </Card>
       )}
-
-      {/* Prompt Containers - These will be shown when respective states are true */}
-      {/* Add your existing prompt components here when they're needed */}
     </div>
   );
 };
