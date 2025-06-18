@@ -332,7 +332,10 @@ export const getPromptData = async (baseUrl: string, selectedDomain: string, lin
     }
 
     const res = await response.json();
-    return res;
+    
+    // Return the actual content string instead of the full response object
+    // Adjust this based on your API response structure
+    return res.content || res.data || res.result || res;
   } catch (err) {
     console.error("Error fetching prompt data:", err);
     return null;
