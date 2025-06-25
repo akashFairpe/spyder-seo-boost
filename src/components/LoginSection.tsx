@@ -13,10 +13,10 @@ export const LoginSection = () => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.xid) {
         const xid = event.data.xid;
-        const isProduction = window.location.hostname.includes('lovable.app');
+        const isProduction = window.location.hostname.includes('seospyder.io');
         
         if (isProduction) {
-          document.cookie = `xid=${xid}; path=/; max-age=${15 * 24 * 60 * 60}; Secure; SameSite=None; domain=.lovable.app`;
+          document.cookie = `xid=${xid}; path=/; max-age=${15 * 24 * 60 * 60}; Secure; SameSite=None; domain=.seospyder.io`;
         } else {
           document.cookie = `xid=${xid}; path=/; max-age=${15 * 24 * 60 * 60};Secure; SameSite=None`;
         }
