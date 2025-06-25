@@ -1,12 +1,13 @@
 
 import { useState } from 'react';
-import { Plus, Globe, TrendingUp, BarChart3 } from 'lucide-react';
+import { Plus, Globe, TrendingUp, BarChart3, Lightbulb, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAppSharing } from '@/contexts/AppContext';
 import { getGoogleData, consoleReport } from '@/lib/api';
 import { DataPresentation } from './DataPresentation';
+import { SeoStrategy } from './SeoStrategy';
 
 export const DashboardContainer = () => {
   const { 
@@ -22,6 +23,8 @@ export const DashboardContainer = () => {
     setShowMessage
   } = useAppSharing();
 
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'optimization' | 'strategy'>('dashboard');
+
   const fetchGoogleData = () => {
     getGoogleData(baseUrl, setWebsiteList, setIsLoading, setShowMessage);
   };
@@ -30,6 +33,24 @@ export const DashboardContainer = () => {
     consoleReport(baseUrl, siteUrl, setReportData, setIsLoading, siteUrl);
     setSelectedDomain(siteUrl);
   };
+
+  if (activeSection === 'strategy') {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Button 
+            variant="ghost" 
+            onClick={() => setActiveSection('dashboard')}
+            className="p-2"
+          >
+            ← Back to Dashboard
+          </Button>
+          <h1 className="text-xl font-bold text-gray-900">SEO Strategy Research</h1>
+        </div>
+        <SeoStrategy baseUrl={baseUrl} />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -53,6 +74,35 @@ export const DashboardContainer = () => {
               <Plus className="w-4 h-4 mr-2" />
               Connect
             </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Main Action Buttons */}
+      <Card className="mb-6 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-orange-900 mb-2">SEO Tools</h3>
+              <p className="text-sm text-orange-700">Choose your optimization approach</p>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                onClick={() => setActiveSection('optimization')}
+                className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2"
+              >
+                <Lightbulb className="w-4 h-4" />
+                WordPress Optimization
+              </Button>
+              <Button 
+                onClick={() => setActiveSection('strategy')}
+                variant="outline"
+                className="border-orange-300 text-orange-700 hover:bg-orange-50 flex items-center gap-2"
+              >
+                <Search className="w-4 h-4" />
+                SEO Strategy
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -100,7 +150,7 @@ export const DashboardContainer = () => {
       )}
 
       {/* Data Presentation */}
-      {reportData && reportData.length > 0 && (
+      {reportData && reportData.length > 0 && activeSection === 'dashboard' && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
