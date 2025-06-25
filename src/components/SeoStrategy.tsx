@@ -1,14 +1,19 @@
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Search, Globe, ExternalLink, Copy, Check } from 'lucide-react';
-import { useAppSharing } from '@/contexts/AppContext';
-import ReactMarkdown from 'react-markdown';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Search, Globe, ExternalLink, Copy, Check } from "lucide-react";
+import { useAppSharing } from "@/contexts/AppContext";
+import ReactMarkdown from "react-markdown";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface SearchResult {
   title: string;
@@ -31,24 +36,26 @@ interface SeoStrategyProps {
 
 export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
   const { setIsLoading, setErrorMsg } = useAppSharing();
-  const [keyword, setKeyword] = useState('');
-  const [location, setLocation] = useState('');
-  const [strategyData, setStrategyData] = useState<SeoStrategyData | null>(null);
+  const [keyword, setKeyword] = useState("");
+  const [location, setLocation] = useState("");
+  const [strategyData, setStrategyData] = useState<SeoStrategyData | null>(
+    null
+  );
   const [copied, setCopied] = useState(false);
 
   const handleSearch = async () => {
     if (!keyword.trim() || !location.trim()) {
-      setErrorMsg('Please enter both keyword and location');
+      setErrorMsg("Please enter both keyword and location");
       return;
     }
 
     setIsLoading(true);
     try {
       const response = await fetch(`${baseUrl}/api/searched-seo`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           keyword: keyword.trim(),
@@ -61,12 +68,19 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
       }
 
       const result = await response.json();
-      if (result.data) {
-        setStrategyData(result.data);
+      // if (result.data) {
+      //   setStrategyData(result.data);
+      // }
+
+      if (result.data && result.aiStrategy) {
+        setStrategyData({
+          ...result.data,
+          aiStrategy: result.aiStrategy,
+        });
       }
     } catch (error) {
-      console.error('SEO Strategy fetch error:', error);
-      setErrorMsg('Failed to fetch SEO strategy. Please try again.');
+      console.error("SEO Strategy fetch error:", error);
+      setErrorMsg("Failed to fetch SEO strategy. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +94,7 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     }
   };
 
@@ -145,22 +159,29 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
                 <ScrollArea className="h-80">
                   <div className="space-y-3 pr-4">
                     {strategyData.results.map((result, index) => (
-                      <div key={index} className="border rounded-lg p-3 hover:bg-gray-50">
+                      <div
+                        key={index}
+                        className="border rounded-lg p-3 hover:bg-gray-50"
+                      >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
                             <h4 className="font-medium text-sm text-blue-600 hover:text-blue-800 leading-tight">
-                              <a 
-                                href={result.link} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
+                              <a
+                                href={result.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="flex items-start gap-1"
                               >
                                 {result.title}
                                 <ExternalLink className="w-3 h-3 mt-0.5 flex-shrink-0" />
                               </a>
                             </h4>
-                            <p className="text-xs text-green-600 mb-1 truncate">{result.displayUrl}</p>
-                            <p className="text-xs text-gray-500">{result.source}</p>
+                            <p className="text-xs text-green-600 mb-1 truncate">
+                              {result.displayUrl}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {result.source}
+                            </p>
                           </div>
                           <Badge variant="outline" className="ml-2 text-xs">
                             #{result.position}
@@ -201,7 +222,8 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
                   <div>
                     <CardTitle className="text-lg">AI SEO Strategy</CardTitle>
                     <CardDescription>
-                      Comprehensive SEO recommendations based on competitor analysis
+                      Comprehensive SEO recommendations based on competitor
+                      analysis
                     </CardDescription>
                   </div>
                   <Button
@@ -229,16 +251,52 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
                   <div className="border rounded-lg p-4 bg-gray-50 pr-4">
                     <ReactMarkdown
                       components={{
-                        p: ({ children }) => <p className="mb-3 text-sm leading-relaxed">{children}</p>,
-                        h1: ({ children }) => <h1 className="text-xl font-bold mb-4 text-gray-900">{children}</h1>,
-                        h2: ({ children }) => <h2 className="text-lg font-semibold mb-3 text-gray-800">{children}</h2>,
-                        h3: ({ children }) => <h3 className="text-base font-medium mb-2 text-gray-700">{children}</h3>,
-                        h4: ({ children }) => <h4 className="text-sm font-medium mb-2 text-gray-700">{children}</h4>,
-                        ul: ({ children }) => <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>,
-                        ol: ({ children }) => <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>,
-                        li: ({ children }) => <li className="text-sm text-gray-700">{children}</li>,
-                        strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
-                        em: ({ children }) => <em className="italic text-gray-700">{children}</em>,
+                        p: ({ children }) => (
+                          <p className="mb-3 text-sm leading-relaxed">
+                            {children}
+                          </p>
+                        ),
+                        h1: ({ children }) => (
+                          <h1 className="text-xl font-bold mb-4 text-gray-900">
+                            {children}
+                          </h1>
+                        ),
+                        h2: ({ children }) => (
+                          <h2 className="text-lg font-semibold mb-3 text-gray-800">
+                            {children}
+                          </h2>
+                        ),
+                        h3: ({ children }) => (
+                          <h3 className="text-base font-medium mb-2 text-gray-700">
+                            {children}
+                          </h3>
+                        ),
+                        h4: ({ children }) => (
+                          <h4 className="text-sm font-medium mb-2 text-gray-700">
+                            {children}
+                          </h4>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className="list-disc list-inside mb-3 space-y-1">
+                            {children}
+                          </ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol className="list-decimal list-inside mb-3 space-y-1">
+                            {children}
+                          </ol>
+                        ),
+                        li: ({ children }) => (
+                          <li className="text-sm text-gray-700">{children}</li>
+                        ),
+                        strong: ({ children }) => (
+                          <strong className="font-semibold text-gray-900">
+                            {children}
+                          </strong>
+                        ),
+                        em: ({ children }) => (
+                          <em className="italic text-gray-700">{children}</em>
+                        ),
                         blockquote: ({ children }) => (
                           <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600 mb-3">
                             {children}
