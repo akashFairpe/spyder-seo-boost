@@ -49,8 +49,6 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
     null
   );
   const [copied, setCopied] = useState(false);
-  // Keep track of the country that was used for the current data
-  const [currentDataCountry, setCurrentDataCountry] = useState<Country | null>(null);
 
   const handleSearch = async () => {
     if (!keyword.trim() || !selectedCountry) {
@@ -84,8 +82,6 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
           ...result.data,
           aiStrategy: result.aiStrategy,
         });
-        // Update the current data country only when new data arrives
-        setCurrentDataCountry(selectedCountry);
       }
     } catch (error) {
       console.error("SEO Strategy fetch error:", error);
@@ -108,7 +104,7 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
   };
 
   return (
-    <div className="space-y-6 h-full">
+    <div className="space-y-6">
       {/* Search Form */}
       <Card>
         <CardHeader>
@@ -148,49 +144,48 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
         </CardContent>
       </Card>
 
-      {/* Results Layout - Fixed Height Container */}
+      {/* Results Layout */}
       {strategyData && (
-        <div className="h-[calc(100vh-350px)] flex gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Sidebar - Results and Keywords */}
-          <div className="w-1/3 flex flex-col gap-4 min-h-0">
+          <div className="space-y-4">
             {/* Search Results */}
-            <Card className="flex-1 min-h-0">
-              <CardHeader className="pb-3 flex-shrink-0">
+            <Card>
+              <CardHeader>
                 <CardTitle className="text-lg">Search Results</CardTitle>
                 <CardDescription>
-                  Top ranking pages for "{keyword}" in {currentDataCountry?.country_name || "Selected Country"}
+                  Top ranking pages for "{keyword}" in {selectedCountry?.country_name}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-1 min-h-0 pb-4">
-                <ScrollArea className="h-full">
+              <CardContent>
+                <ScrollArea className="h-80">
                   <div className="space-y-3 pr-4">
                     {strategyData.results.map((result, index) => (
                       <div
                         key={index}
                         className="border rounded-lg p-3 hover:bg-gray-50"
                       >
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm text-blue-600 hover:text-blue-800 leading-tight mb-1">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-sm text-blue-600 hover:text-blue-800 leading-tight">
                               <a
                                 href={result.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-start gap-1 break-words"
-                                title={result.title}
+                                className="flex items-start gap-1"
                               >
-                                <span className="line-clamp-2">{result.title}</span>
+                                {result.title}
                                 <ExternalLink className="w-3 h-3 mt-0.5 flex-shrink-0" />
                               </a>
                             </h4>
-                            <p className="text-xs text-green-600 mb-1 truncate" title={result.displayUrl}>
+                            <p className="text-xs text-green-600 mb-1 truncate">
                               {result.displayUrl}
                             </p>
-                            <p className="text-xs text-gray-500 truncate">
+                            <p className="text-xs text-gray-500">
                               {result.source}
                             </p>
                           </div>
-                          <Badge variant="outline" className="text-xs flex-shrink-0">
+                          <Badge variant="outline" className="ml-2 text-xs">
                             #{result.position}
                           </Badge>
                         </div>
@@ -202,31 +197,29 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
             </Card>
 
             {/* Related Keywords */}
-            <Card className="flex-1 min-h-0">
-              <CardHeader className="pb-3 flex-shrink-0">
+            <Card>
+              <CardHeader>
                 <CardTitle className="text-lg">Related Keywords</CardTitle>
                 <CardDescription>
                   Keywords related to your search term
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-1 min-h-0 pb-4">
-                <ScrollArea className="h-full">
-                  <div className="flex flex-wrap gap-2 pr-4">
-                    {strategyData.relatedKeywords.map((relatedKeyword, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {relatedKeyword}
-                      </Badge>
-                    ))}
-                  </div>
-                </ScrollArea>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {strategyData.relatedKeywords.map((relatedKeyword, index) => (
+                    <Badge key={index} variant="secondary" className="text-xs">
+                      {relatedKeyword}
+                    </Badge>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Main Content - AI Strategy */}
-          <div className="flex-1 min-h-0">
-            <Card className="h-full flex flex-col">
-              <CardHeader className="pb-3 flex-shrink-0">
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg">AI SEO Strategy</CardTitle>
@@ -255,9 +248,9 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="flex-1 min-h-0 pb-4">
-                <ScrollArea className="h-full">
-                  <div className="border rounded-lg p-4 bg-gray-50 mr-4">
+              <CardContent>
+                <ScrollArea className="h-96">
+                  <div className="border rounded-lg p-4 bg-gray-50 pr-4">
                     <ReactMarkdown
                       components={{
                         p: ({ children }) => (
