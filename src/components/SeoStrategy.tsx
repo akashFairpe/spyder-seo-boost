@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Globe, ExternalLink, Copy, Check } from 'lucide-react';
 import { useAppSharing } from '@/contexts/AppContext';
 import ReactMarkdown from 'react-markdown';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface SearchResult {
   title: string;
@@ -84,49 +85,54 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Search className="w-4 h-4 text-blue-600" />
-          SEO Strategy Research
-        </CardTitle>
-        <CardDescription>
-          Enter a keyword and location to get comprehensive SEO insights
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Search Form */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="keyword">Keyword</Label>
-            <Input
-              id="keyword"
-              type="text"
-              placeholder="e.g., adspyder"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-            />
+    <div className="space-y-6">
+      {/* Search Form */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Search className="w-4 h-4 text-blue-600" />
+            SEO Strategy Research
+          </CardTitle>
+          <CardDescription>
+            Enter a keyword and location to get comprehensive SEO insights
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="keyword">Keyword</Label>
+              <Input
+                id="keyword"
+                type="text"
+                placeholder="e.g., adspyder"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                type="text"
+                placeholder="e.g., Russia"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </div>
           </div>
-          <div>
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              type="text"
-              placeholder="e.g., Russia"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-          </div>
-        </div>
 
-        <Button onClick={handleSearch} className="w-full">
-          <Search className="w-4 h-4 mr-2" />
-          Generate SEO Strategy
-        </Button>
+          <Button onClick={handleSearch} className="w-full">
+            <Search className="w-4 h-4 mr-2" />
+            Generate SEO Strategy
+          </Button>
+        </CardContent>
+      </Card>
 
-        {/* Results */}
-        {strategyData && (
-          <div className="space-y-6">
+      {/* Results Layout */}
+      {strategyData && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Sidebar - Results and Keywords */}
+          <div className="space-y-4">
             {/* Search Results */}
             <Card>
               <CardHeader>
@@ -136,31 +142,34 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {strategyData.results.map((result, index) => (
-                    <div key={index} className="border rounded-lg p-4 hover:bg-gray-50">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-blue-600 hover:text-blue-800">
-                            <a href={result.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-                              {result.title}
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </h3>
-                          <p className="text-sm text-green-600 mb-1">{result.displayUrl}</p>
-                          <p className="text-sm text-gray-600">{result.description}</p>
+                <ScrollArea className="h-80">
+                  <div className="space-y-3 pr-4">
+                    {strategyData.results.map((result, index) => (
+                      <div key={index} className="border rounded-lg p-3 hover:bg-gray-50">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-sm text-blue-600 hover:text-blue-800 leading-tight">
+                              <a 
+                                href={result.link} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="flex items-start gap-1"
+                              >
+                                {result.title}
+                                <ExternalLink className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                              </a>
+                            </h4>
+                            <p className="text-xs text-green-600 mb-1 truncate">{result.displayUrl}</p>
+                            <p className="text-xs text-gray-500">{result.source}</p>
+                          </div>
+                          <Badge variant="outline" className="ml-2 text-xs">
+                            #{result.position}
+                          </Badge>
                         </div>
-                        <Badge variant="outline" className="ml-2">
-                          #{result.position}
-                        </Badge>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <Globe className="w-3 h-3" />
-                        <span>{result.source}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </ScrollArea>
               </CardContent>
             </Card>
 
@@ -175,15 +184,17 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {strategyData.relatedKeywords.map((relatedKeyword, index) => (
-                    <Badge key={index} variant="secondary" className="text-sm">
+                    <Badge key={index} variant="secondary" className="text-xs">
                       {relatedKeyword}
                     </Badge>
                   ))}
                 </div>
               </CardContent>
             </Card>
+          </div>
 
-            {/* AI Strategy */}
+          {/* Main Content - AI Strategy */}
+          <div className="lg:col-span-2">
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -214,44 +225,46 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="max-h-96 overflow-y-auto border rounded-lg p-4 bg-gray-50">
-                  <ReactMarkdown
-                    components={{
-                      p: ({ children }) => <p className="mb-3 text-sm leading-relaxed">{children}</p>,
-                      h1: ({ children }) => <h1 className="text-xl font-bold mb-4 text-gray-900">{children}</h1>,
-                      h2: ({ children }) => <h2 className="text-lg font-semibold mb-3 text-gray-800">{children}</h2>,
-                      h3: ({ children }) => <h3 className="text-base font-medium mb-2 text-gray-700">{children}</h3>,
-                      h4: ({ children }) => <h4 className="text-sm font-medium mb-2 text-gray-700">{children}</h4>,
-                      ul: ({ children }) => <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>,
-                      ol: ({ children }) => <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>,
-                      li: ({ children }) => <li className="text-sm text-gray-700">{children}</li>,
-                      strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
-                      em: ({ children }) => <em className="italic text-gray-700">{children}</em>,
-                      blockquote: ({ children }) => (
-                        <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600 mb-3">
-                          {children}
-                        </blockquote>
-                      ),
-                      code: ({ children }) => (
-                        <code className="bg-gray-200 px-1 py-0.5 rounded text-sm font-mono">
-                          {children}
-                        </code>
-                      ),
-                      pre: ({ children }) => (
-                        <pre className="bg-gray-800 text-white p-3 rounded-lg overflow-x-auto mb-3">
-                          {children}
-                        </pre>
-                      ),
-                    }}
-                  >
-                    {strategyData.aiStrategy}
-                  </ReactMarkdown>
-                </div>
+                <ScrollArea className="h-96">
+                  <div className="border rounded-lg p-4 bg-gray-50 pr-4">
+                    <ReactMarkdown
+                      components={{
+                        p: ({ children }) => <p className="mb-3 text-sm leading-relaxed">{children}</p>,
+                        h1: ({ children }) => <h1 className="text-xl font-bold mb-4 text-gray-900">{children}</h1>,
+                        h2: ({ children }) => <h2 className="text-lg font-semibold mb-3 text-gray-800">{children}</h2>,
+                        h3: ({ children }) => <h3 className="text-base font-medium mb-2 text-gray-700">{children}</h3>,
+                        h4: ({ children }) => <h4 className="text-sm font-medium mb-2 text-gray-700">{children}</h4>,
+                        ul: ({ children }) => <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>,
+                        ol: ({ children }) => <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>,
+                        li: ({ children }) => <li className="text-sm text-gray-700">{children}</li>,
+                        strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                        em: ({ children }) => <em className="italic text-gray-700">{children}</em>,
+                        blockquote: ({ children }) => (
+                          <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600 mb-3">
+                            {children}
+                          </blockquote>
+                        ),
+                        code: ({ children }) => (
+                          <code className="bg-gray-200 px-1 py-0.5 rounded text-sm font-mono">
+                            {children}
+                          </code>
+                        ),
+                        pre: ({ children }) => (
+                          <pre className="bg-gray-800 text-white p-3 rounded-lg overflow-x-auto mb-3">
+                            {children}
+                          </pre>
+                        ),
+                      }}
+                    >
+                      {strategyData.aiStrategy}
+                    </ReactMarkdown>
+                  </div>
+                </ScrollArea>
               </CardContent>
             </Card>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </div>
   );
 };
