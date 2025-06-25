@@ -1,4 +1,4 @@
-import { ArrowLeft, TrendingUp, Target, Lightbulb, User, Lock, AlertCircle, X } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Target, Lightbulb, User, Lock, AlertCircle, X, Search, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import NumberedListPrompt from './prompts/NumberedListPrompt';
 import DataPrompt from './prompts/DataPrompt';
 import SingleFocusedKeywordPrompt from './prompts/SingleFocusedKeywordPrompt';
 import ImageGeneratorWithSelector from './prompts/ImageGeneratorWithSelector';
+import { SeoStrategy } from './SeoStrategy';
 
 export const OptimizeSection = () => {
   const { 
@@ -35,6 +36,7 @@ export const OptimizeSection = () => {
   const [wplogged, setWplogged] = useState(false);
   const [noContent, setNoContent] = useState(false);
   const [gptId, setGptId] = useState('');
+  const [activeSection, setActiveSection] = useState<'optimization' | 'strategy'>('optimization');
 
   // Single state to track which prompt is active
   const [activePrompt, setActivePrompt] = useState<string | null>(null);
@@ -70,6 +72,7 @@ export const OptimizeSection = () => {
     setSelectedReport(null);
     setCurrentReport(null);
     setActivePrompt(null);
+    setActiveSection('optimization');
     setPromptData({
       faqData: "",
       tableData: "",
@@ -108,7 +111,7 @@ export const OptimizeSection = () => {
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">SEO Optimization</h1>
+          <h1 className="text-xl font-bold text-gray-900">SEO Tools</h1>
           <p className="text-sm text-gray-600">
             {selectedReport?.pageUrl && (
               <span className="truncate max-w-md inline-block">
@@ -127,10 +130,30 @@ export const OptimizeSection = () => {
         </Button>
       </div>
 
+      {/* Section Toggle */}
+      <div className="flex gap-2 mb-6">
+        <Button
+          variant={activeSection === 'optimization' ? 'default' : 'outline'}
+          onClick={() => setActiveSection('optimization')}
+          className="flex items-center gap-2"
+        >
+          <Lightbulb className="w-4 h-4" />
+          Optimization
+        </Button>
+        <Button
+          variant={activeSection === 'strategy' ? 'default' : 'outline'}
+          onClick={() => setActiveSection('strategy')}
+          className="flex items-center gap-2"
+        >
+          <Search className="w-4 h-4" />
+          SEO Strategy
+        </Button>
+      </div>
+
       {/* Content Display */}
       {currentReport && (
         <div className="space-y-6">
-          {/* Page Content - No max height restriction */}
+          {/* Page Content */}
           <Card>
             <CardHeader>
               <CardTitle>Page Content</CardTitle>
@@ -182,72 +205,78 @@ export const OptimizeSection = () => {
             </CardContent>
           </Card>
 
-          {/* AI Optimization Options */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="w-4 h-4 text-orange-600" />
-                AI Optimization
-              </CardTitle>
-              <CardDescription>Choose optimization type</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {optimizationOptions.map((option) => (
-                  <Button 
-                    key={option.key}
-                    variant={activePrompt === option.key ? "default" : "outline"}
-                    className={`w-full justify-start relative ${
-                      activePrompt === option.key ? 'bg-blue-600 text-white' : ''
-                    }`}
-                    onClick={() => handlePromptToggle(option.key)}
-                  >
-                    {option.label}
-                    {option.hasData && (
-                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
-                    )}
-                  </Button>
-                ))}
-              </div>
-
-              {/* Active Prompt Component */}
-              {activePrompt && (
-                <div className="mt-6 border-t pt-4">
-                  {activePrompt === 'faq' && (
-                    <FaqPrompt report={currentReport} id={gptId} />
-                  )}
-
-                  {activePrompt === 'table' && (
-                    <TablePrompt report={currentReport} id={gptId} />
-                  )}
-
-                  {activePrompt === 'bullet' && (
-                    <BulletPrompt report={currentReport} id={gptId} />
-                  )}
-
-                  {activePrompt === 'tableOfContents' && (
-                    <TableOfContentsPrompt report={currentReport} id={gptId} />
-                  )}
-
-                  {activePrompt === 'numberedList' && (
-                    <NumberedListPrompt report={currentReport} id={gptId} />
-                  )}
-
-                  {activePrompt === 'data' && (
-                    <DataPrompt content={currentReport} report={selectedReport} id={gptId} />
-                  )}
-
-                  {activePrompt === 'singleKey' && (
-                    <SingleFocusedKeywordPrompt report={selectedReport} id={gptId} />
-                  )}
-
-                  {activePrompt === 'imgGen' && (
-                    <ImageGeneratorWithSelector content={currentReport} report={selectedReport} id={gptId} />
-                  )}
+          {/* Dynamic Section Content */}
+          {activeSection === 'optimization' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Lightbulb className="w-4 h-4 text-orange-600" />
+                  AI Optimization
+                </CardTitle>
+                <CardDescription>Choose optimization type</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {optimizationOptions.map((option) => (
+                    <Button 
+                      key={option.key}
+                      variant={activePrompt === option.key ? "default" : "outline"}
+                      className={`w-full justify-start relative ${
+                        activePrompt === option.key ? 'bg-blue-600 text-white' : ''
+                      }`}
+                      onClick={() => handlePromptToggle(option.key)}
+                    >
+                      {option.label}
+                      {option.hasData && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                      )}
+                    </Button>
+                  ))}
                 </div>
-              )}
-            </CardContent>
-          </Card>
+
+                {/* Active Prompt Component */}
+                {activePrompt && (
+                  <div className="mt-6 border-t pt-4">
+                    {activePrompt === 'faq' && (
+                      <FaqPrompt report={currentReport} id={gptId} />
+                    )}
+
+                    {activePrompt === 'table' && (
+                      <TablePrompt report={currentReport} id={gptId} />
+                    )}
+
+                    {activePrompt === 'bullet' && (
+                      <BulletPrompt report={currentReport} id={gptId} />
+                    )}
+
+                    {activePrompt === 'tableOfContents' && (
+                      <TableOfContentsPrompt report={currentReport} id={gptId} />
+                    )}
+
+                    {activePrompt === 'numberedList' && (
+                      <NumberedListPrompt report={currentReport} id={gptId} />
+                    )}
+
+                    {activePrompt === 'data' && (
+                      <DataPrompt content={currentReport} report={selectedReport} id={gptId} />
+                    )}
+
+                    {activePrompt === 'singleKey' && (
+                      <SingleFocusedKeywordPrompt report={selectedReport} id={gptId} />
+                    )}
+
+                    {activePrompt === 'imgGen' && (
+                      <ImageGeneratorWithSelector content={currentReport} report={selectedReport} id={gptId} />
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {activeSection === 'strategy' && (
+            <SeoStrategy baseUrl={baseUrl} />
+          )}
         </div>
       )}
 

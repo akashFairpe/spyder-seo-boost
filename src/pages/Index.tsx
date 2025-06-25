@@ -9,7 +9,7 @@ import { getGoogleProfile } from '@/lib/api';
 
 const Index = () => {
   const { profileData, baseUrl, setProfileData, errorMsg, setErrorMsg, isLoading, setIsLoading } = useAppSharing();
-
+  //temp msg
   useEffect(() => {
     getGoogleProfile(baseUrl, setProfileData, setIsLoading);
     console.log("\x1b[31m\x1b[1m%s\x1b[0m", "⚠️  WARNING: Read the README file!");
