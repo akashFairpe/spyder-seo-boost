@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Card,
@@ -14,6 +15,7 @@ import { Search, Globe, ExternalLink, Copy, Check } from "lucide-react";
 import { useAppSharing } from "@/contexts/AppContext";
 import ReactMarkdown from "react-markdown";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { CountrySelector } from "./CountrySelector";
 
 interface SearchResult {
   title: string;
@@ -34,18 +36,23 @@ interface SeoStrategyProps {
   baseUrl: string;
 }
 
+interface Country {
+  country_name: string;
+  country_code: string;
+}
+
 export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
   const { setIsLoading, setErrorMsg } = useAppSharing();
   const [keyword, setKeyword] = useState("");
-  const [location, setLocation] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [strategyData, setStrategyData] = useState<SeoStrategyData | null>(
     null
   );
   const [copied, setCopied] = useState(false);
 
   const handleSearch = async () => {
-    if (!keyword.trim() || !location.trim()) {
-      setErrorMsg("Please enter both keyword and location");
+    if (!keyword.trim() || !selectedCountry) {
+      setErrorMsg("Please enter both keyword and select a country");
       return;
     }
 
@@ -59,7 +66,8 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
         },
         body: JSON.stringify({
           keyword: keyword.trim(),
-          location: location.trim(),
+          location: selectedCountry.country_name,
+          country_code: selectedCountry.country_code,
         }),
       });
 
@@ -68,9 +76,6 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
       }
 
       const result = await response.json();
-      // if (result.data) {
-      //   setStrategyData(result.data);
-      // }
 
       if (result.data && result.aiStrategy) {
         setStrategyData({
@@ -108,7 +113,7 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
             SEO Strategy Research
           </CardTitle>
           <CardDescription>
-            Enter a keyword and location to get comprehensive SEO insights
+            Enter a keyword and select a country to get comprehensive SEO insights
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -124,13 +129,10 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
               />
             </div>
             <div>
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                type="text"
-                placeholder="e.g., Russia"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+              <Label htmlFor="country">Country</Label>
+              <CountrySelector
+                value={selectedCountry}
+                onSelect={setSelectedCountry}
               />
             </div>
           </div>
@@ -152,7 +154,7 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
               <CardHeader>
                 <CardTitle className="text-lg">Search Results</CardTitle>
                 <CardDescription>
-                  Top ranking pages for "{keyword}" in {location}
+                  Top ranking pages for "{keyword}" in {selectedCountry?.country_name}
                 </CardDescription>
               </CardHeader>
               <CardContent>
