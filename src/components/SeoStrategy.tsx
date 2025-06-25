@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Card,
@@ -107,7 +108,7 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 h-full">
       {/* Search Form */}
       <Card>
         <CardHeader>
@@ -147,20 +148,20 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
         </CardContent>
       </Card>
 
-      {/* Results Layout - Full Height Container */}
+      {/* Results Layout - Fixed Height Container */}
       {strategyData && (
-        <div className="h-[calc(100vh-300px)] flex gap-6">
+        <div className="h-[calc(100vh-350px)] flex gap-6">
           {/* Sidebar - Results and Keywords */}
-          <div className="w-1/3 space-y-4">
+          <div className="w-1/3 flex flex-col gap-4 min-h-0">
             {/* Search Results */}
-            <Card className="h-1/2">
-              <CardHeader className="pb-3">
+            <Card className="flex-1 min-h-0">
+              <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-lg">Search Results</CardTitle>
                 <CardDescription>
                   Top ranking pages for "{keyword}" in {currentDataCountry?.country_name || "Selected Country"}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="h-full pb-6">
+              <CardContent className="flex-1 min-h-0 pb-4">
                 <ScrollArea className="h-full">
                   <div className="space-y-3 pr-4">
                     {strategyData.results.map((result, index) => (
@@ -178,7 +179,7 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
                                 className="flex items-start gap-1 break-words"
                                 title={result.title}
                               >
-                                <span className="truncate">{result.title}</span>
+                                <span className="line-clamp-2">{result.title}</span>
                                 <ExternalLink className="w-3 h-3 mt-0.5 flex-shrink-0" />
                               </a>
                             </h4>
@@ -201,14 +202,14 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
             </Card>
 
             {/* Related Keywords */}
-            <Card className="h-1/2">
-              <CardHeader className="pb-3">
+            <Card className="flex-1 min-h-0">
+              <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-lg">Related Keywords</CardTitle>
                 <CardDescription>
                   Keywords related to your search term
                 </CardDescription>
               </CardHeader>
-              <CardContent className="h-full pb-6">
+              <CardContent className="flex-1 min-h-0 pb-4">
                 <ScrollArea className="h-full">
                   <div className="flex flex-wrap gap-2 pr-4">
                     {strategyData.relatedKeywords.map((relatedKeyword, index) => (
@@ -223,9 +224,9 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
           </div>
 
           {/* Main Content - AI Strategy */}
-          <div className="flex-1">
-            <Card className="h-full">
-              <CardHeader className="pb-3">
+          <div className="flex-1 min-h-0">
+            <Card className="h-full flex flex-col">
+              <CardHeader className="pb-3 flex-shrink-0">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg">AI SEO Strategy</CardTitle>
@@ -254,9 +255,9 @@ export const SeoStrategy = ({ baseUrl }: SeoStrategyProps) => {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="h-full pb-6">
+              <CardContent className="flex-1 min-h-0 pb-4">
                 <ScrollArea className="h-full">
-                  <div className="border rounded-lg p-4 bg-gray-50 pr-4">
+                  <div className="border rounded-lg p-4 bg-gray-50 mr-4">
                     <ReactMarkdown
                       components={{
                         p: ({ children }) => (
