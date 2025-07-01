@@ -22,6 +22,8 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
   const [error, setError] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [prompt, setPrompt] = useState("");
+  const [generatedPrompts, setGeneratedPrompts] = useState<string[]>([]);
+  const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPrompt(e.target.value);
   const handleModelChange = (value: string) => setAiModel(value);
@@ -77,25 +79,51 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
         return;
       }
 
-      // Step 2: Generate images from prompt array
-      const generatedImages = await Promise.all(
-        promptArr.map((p: string) => getGenImg(baseUrl, p, content.title.rendered, aiModel))
-      );
+      setGeneratedPrompts(promptArr);
+      setCurrentPromptIndex(0);
 
-      const allImages = generatedImages
-        .filter((res: any) => res?.images)
-        .flatMap((res: any) => res.images);
+      // Step 2: Generate only the first image
+      const firstImageResponse = await getGenImg(baseUrl, promptArr[0], content.title.rendered, aiModel);
 
-      if (allImages.length === 0) {
-        setError("No images generated. Try a different prompt.");
+      if (firstImageResponse?.images && firstImageResponse.images.length > 0) {
+        setImages(firstImageResponse.images);
       } else {
-        setImages(prev => [...allImages, ...prev]);
+        setError("No images generated. Try a different prompt.");
       }
     } catch (err) {
       console.error("Image generation flow error:", err);
       setError("An error occurred while generating images.");
     }
     
+    setLoading(false);
+  };
+
+  const handleGenerateMore = async () => {
+    if (currentPromptIndex >= generatedPrompts.length - 1) {
+      setError("No more prompts available.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const nextIndex = currentPromptIndex + 1;
+      const nextPrompt = generatedPrompts[nextIndex];
+      
+      const imageResponse = await getGenImg(baseUrl, nextPrompt, content.title.rendered, aiModel);
+
+      if (imageResponse?.images && imageResponse.images.length > 0) {
+        setImages(prev => [...imageResponse.images, ...prev]);
+        setCurrentPromptIndex(nextIndex);
+      } else {
+        setError("Failed to generate more images.");
+      }
+    } catch (err) {
+      console.error("Generate more images error:", err);
+      setError("An error occurred while generating more images.");
+    }
+
     setLoading(false);
   };
 
@@ -132,9 +160,22 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
           />
         </div>
 
-        <Button onClick={handleImageGenerate} disabled={loading} className="w-full">
-          {loading ? "Generating..." : "Generate"}
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleImageGenerate} disabled={loading} className="flex-1">
+            {loading ? "Generating..." : "Generate First Image"}
+          </Button>
+          
+          {generatedPrompts.length > 0 && currentPromptIndex < generatedPrompts.length - 1 && (
+            <Button 
+              onClick={handleGenerateMore} 
+              disabled={loading}
+              variant="outline"
+              className="flex-1"
+            >
+              {loading ? "Generating..." : `Generate More (${generatedPrompts.length - currentPromptIndex - 1} left)`}
+            </Button>
+          )}
+        </div>
 
         {loading && (
           <div className="text-center text-blue-600 font-medium">
@@ -145,6 +186,12 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
         {error && (
           <div className="text-center text-red-600 text-sm">
             {error}
+          </div>
+        )}
+
+        {generatedPrompts.length > 0 && (
+          <div className="text-center text-sm text-gray-600">
+            Generated {currentPromptIndex + 1} of {generatedPrompts.length} prompts
           </div>
         )}
 

@@ -1,3 +1,4 @@
+
 import {
   ArrowLeft,
   TrendingUp,
@@ -97,7 +98,7 @@ export const OptimizeSection = () => {
     wordpressLogin(baseUrl, wName, wPassword, domain, setWplogged);
   };
 
-  const handleClose = () => {
+  const handleBackToDashboard = () => {
     setSelectedReport(null);
     setCurrentReport(null);
     setActivePrompt(null);
@@ -151,7 +152,7 @@ export const OptimizeSection = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" onClick={handleClose} className="p-2">
+        <Button variant="ghost" onClick={handleBackToDashboard} className="p-2">
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div>
@@ -169,7 +170,7 @@ export const OptimizeSection = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={handleClose}
+          onClick={handleBackToDashboard}
           className="ml-auto text-red-600 hover:bg-red-50"
         >
           <X className="w-4 h-4" />
