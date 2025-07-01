@@ -12,7 +12,7 @@ const Index = () => {
   //temp msg
   useEffect(() => {
     getGoogleProfile(baseUrl, setProfileData, setIsLoading);
-    console.log("\x1b[31m\x1b[1m%s\x1b[0m", "⚠️  WARNING: Read the README file!");
+    console.log("\x1b[31m\x1b[1m%s\x1b[0m", "⚠️  WARNING: Read the README file!x");
   }, [baseUrl, setProfileData, setIsLoading]);
 
   useEffect(() => {

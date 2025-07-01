@@ -1,51 +1,79 @@
-
-import { ArrowLeft, TrendingUp, Target, Lightbulb, User, Lock, AlertCircle, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useAppSharing } from '@/contexts/AppContext';
-import { useEffect, useState } from 'react';
-import { getWordPressPage, wordpressLogin } from '@/lib/api';
-import FaqPrompt from './prompts/FaqPrompt';
-import TablePrompt from './prompts/TablePrompt';
-import BulletPrompt from './prompts/BulletPrompt';
-import TableOfContentsPrompt from './prompts/TableOfContentsPrompt';
-import NumberedListPrompt from './prompts/NumberedListPrompt';
-import DataPrompt from './prompts/DataPrompt';
-import SingleFocusedKeywordPrompt from './prompts/SingleFocusedKeywordPrompt';
-import ImageGeneratorWithSelector from './prompts/ImageGeneratorWithSelector';
+import {
+  ArrowLeft,
+  TrendingUp,
+  Target,
+  Lightbulb,
+  User,
+  Lock,
+  AlertCircle,
+  X,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAppSharing } from "@/contexts/AppContext";
+import { useEffect, useState } from "react";
+import { getWordPressPage, wordpressLogin } from "@/lib/api";
+import FaqPrompt from "./prompts/FaqPrompt";
+import TablePrompt from "./prompts/TablePrompt";
+import BulletPrompt from "./prompts/BulletPrompt";
+import TableOfContentsPrompt from "./prompts/TableOfContentsPrompt";
+import NumberedListPrompt from "./prompts/NumberedListPrompt";
+import DataPrompt from "./prompts/DataPrompt";
+import SingleFocusedKeywordPrompt from "./prompts/SingleFocusedKeywordPrompt";
+import ImageGeneratorWithSelector from "./prompts/ImageGeneratorWithSelector";
 
 export const OptimizeSection = () => {
-  const { 
+  const {
     baseUrl,
-    selectedReport, 
-    setSelectedReport, 
-    currentReport, 
+    selectedReport,
+    setSelectedReport,
+    currentReport,
     setCurrentReport,
     selectedDomain,
     setErrorMsg,
     setIsLoading,
     promptData,
-    setPromptData
+    setPromptData,
   } = useAppSharing();
 
   const [isAuthenticated, setIsAuthenticated] = useState(true);
-  const [wName, setWName] = useState('');
-  const [wPassword, setWPassword] = useState('');
+  const [wName, setWName] = useState("");
+  const [wPassword, setWPassword] = useState("");
   const [wplogged, setWplogged] = useState(false);
   const [noContent, setNoContent] = useState(false);
-  const [gptId, setGptId] = useState('');
+  const [gptId, setGptId] = useState("");
 
   // Single state to track which prompt is active
   const [activePrompt, setActivePrompt] = useState<string | null>(null);
 
+  let domain = selectedReport?.pageUrl
+    ? new URL(selectedReport.pageUrl).origin
+    : selectedDomain;
+  domain = domain.includes("couponswala.com") ? `${domain}/blog` : domain;
+
   const initFn = () => {
     const wpUrl = selectedReport?.pageUrl;
     const id = selectedReport?.id;
-    setGptId(id || '');
-    if (wpUrl && selectedDomain) {
-      getWordPressPage(baseUrl, wpUrl, setCurrentReport, selectedDomain, setIsAuthenticated, setNoContent, setIsLoading, id);
+    setGptId(id || "");
+    if (wpUrl && domain) {
+      getWordPressPage(
+        baseUrl,
+        wpUrl,
+        setCurrentReport,
+        domain,
+        setIsAuthenticated,
+        setNoContent,
+        setIsLoading,
+        id
+      );
     }
   };
 
@@ -61,10 +89,12 @@ export const OptimizeSection = () => {
 
   const wLoginBtn = () => {
     if (!wName || !wPassword) {
-      setErrorMsg('Please enter both username and password');
+      setErrorMsg("Please enter both username and password");
       return;
     }
-    wordpressLogin(baseUrl, wName, wPassword, selectedDomain, setWplogged);
+    console.log(selectedReport, "currentReport", currentReport);
+
+    wordpressLogin(baseUrl, wName, wPassword, domain, setWplogged);
   };
 
   const handleClose = () => {
@@ -78,7 +108,7 @@ export const OptimizeSection = () => {
       tableContentData: "",
       numberListData: "",
       basedOnData: "",
-      SingleData: ""
+      SingleData: "",
     });
   };
 
@@ -87,29 +117,47 @@ export const OptimizeSection = () => {
   };
 
   const optimizationOptions = [
-    { key: 'faq', label: 'Generate FAQ\'s', hasData: !!promptData.faqData },
-    { key: 'table', label: 'Generate Tables', hasData: !!promptData.tableData },
-    { key: 'bullet', label: 'Generate Bullet Points', hasData: !!promptData.bulletData },
-    { key: 'tableOfContents', label: 'Table of Contents', hasData: !!promptData.tableContentData },
-    { key: 'numberedList', label: 'Numbered List', hasData: !!promptData.numberListData },
-    { key: 'data', label: 'Data-Based Content', hasData: !!promptData.basedOnData },
-    { key: 'singleKey', label: 'Single Keyword Focus', hasData: !!promptData.SingleData },
-    { key: 'imgGen', label: 'Generate Images', hasData: false },
+    { key: "faq", label: "Generate FAQ's", hasData: !!promptData.faqData },
+    { key: "table", label: "Generate Tables", hasData: !!promptData.tableData },
+    {
+      key: "bullet",
+      label: "Generate Bullet Points",
+      hasData: !!promptData.bulletData,
+    },
+    {
+      key: "tableOfContents",
+      label: "Table of Contents",
+      hasData: !!promptData.tableContentData,
+    },
+    {
+      key: "numberedList",
+      label: "Numbered List",
+      hasData: !!promptData.numberListData,
+    },
+    {
+      key: "data",
+      label: "Data-Based Content",
+      hasData: !!promptData.basedOnData,
+    },
+    {
+      key: "singleKey",
+      label: "Single Keyword Focus",
+      hasData: !!promptData.SingleData,
+    },
+    { key: "imgGen", label: "Generate Images", hasData: false },
   ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Button 
-          variant="ghost" 
-          onClick={handleClose}
-          className="p-2"
-        >
+        <Button variant="ghost" onClick={handleClose} className="p-2">
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">WordPress Optimization</h1>
+          <h1 className="text-xl font-bold text-gray-900">
+            WordPress Optimization
+          </h1>
           <p className="text-sm text-gray-600">
             {selectedReport?.pageUrl && (
               <span className="truncate max-w-md inline-block">
@@ -138,9 +186,11 @@ export const OptimizeSection = () => {
               <CardDescription>WordPress page content analysis</CardDescription>
             </CardHeader>
             <CardContent>
-              <div 
+              <div
                 className="prose prose-sm max-w-none border rounded-lg p-4 bg-gray-50"
-                dangerouslySetInnerHTML={{ __html: currentReport.content?.rendered || '' }}
+                dangerouslySetInnerHTML={{
+                  __html: currentReport.content?.rendered || "",
+                }}
               />
             </CardContent>
           </Card>
@@ -170,13 +220,13 @@ export const OptimizeSection = () => {
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>CTR</span>
-                    <span>{selectedReport?.ctr?.toFixed(2) || '0.00'}%</span>
+                    <span>{selectedReport?.ctr?.toFixed(2) || "0.00"}%</span>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Position</span>
-                    <span>{selectedReport?.position?.toFixed(1) || '0.0'}</span>
+                    <span>{selectedReport?.position?.toFixed(1) || "0.0"}</span>
                   </div>
                 </div>
               </div>
@@ -195,11 +245,15 @@ export const OptimizeSection = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {optimizationOptions.map((option) => (
-                  <Button 
+                  <Button
                     key={option.key}
-                    variant={activePrompt === option.key ? "default" : "outline"}
+                    variant={
+                      activePrompt === option.key ? "default" : "outline"
+                    }
                     className={`w-full justify-start relative ${
-                      activePrompt === option.key ? 'bg-blue-600 text-white' : ''
+                      activePrompt === option.key
+                        ? "bg-blue-600 text-white"
+                        : ""
                     }`}
                     onClick={() => handlePromptToggle(option.key)}
                   >
@@ -214,36 +268,47 @@ export const OptimizeSection = () => {
               {/* Active Prompt Component */}
               {activePrompt && (
                 <div className="mt-6 border-t pt-4">
-                  {activePrompt === 'faq' && (
+                  {activePrompt === "faq" && (
                     <FaqPrompt report={currentReport} id={gptId} />
                   )}
 
-                  {activePrompt === 'table' && (
+                  {activePrompt === "table" && (
                     <TablePrompt report={currentReport} id={gptId} />
                   )}
 
-                  {activePrompt === 'bullet' && (
+                  {activePrompt === "bullet" && (
                     <BulletPrompt report={currentReport} id={gptId} />
                   )}
 
-                  {activePrompt === 'tableOfContents' && (
+                  {activePrompt === "tableOfContents" && (
                     <TableOfContentsPrompt report={currentReport} id={gptId} />
                   )}
 
-                  {activePrompt === 'numberedList' && (
+                  {activePrompt === "numberedList" && (
                     <NumberedListPrompt report={currentReport} id={gptId} />
                   )}
 
-                  {activePrompt === 'data' && (
-                    <DataPrompt content={currentReport} report={selectedReport} id={gptId} />
+                  {activePrompt === "data" && (
+                    <DataPrompt
+                      content={currentReport}
+                      report={selectedReport}
+                      id={gptId}
+                    />
                   )}
 
-                  {activePrompt === 'singleKey' && (
-                    <SingleFocusedKeywordPrompt report={selectedReport} id={gptId} />
+                  {activePrompt === "singleKey" && (
+                    <SingleFocusedKeywordPrompt
+                      report={selectedReport}
+                      id={gptId}
+                    />
                   )}
 
-                  {activePrompt === 'imgGen' && (
-                    <ImageGeneratorWithSelector content={currentReport} report={selectedReport} id={gptId} />
+                  {activePrompt === "imgGen" && (
+                    <ImageGeneratorWithSelector
+                      content={currentReport}
+                      report={selectedReport}
+                      id={gptId}
+                    />
                   )}
                 </div>
               )}
@@ -285,12 +350,14 @@ export const OptimizeSection = () => {
                 value={wPassword}
                 onChange={(e) => setWPassword(e.target.value)}
               />
-              <p className="text-xs text-gray-600 mt-1">Example: s2GS jGiR MhPX 2gXG yElr 0y4R</p>
+              <p className="text-xs text-gray-600 mt-1">
+                Example: s2GS jGiR MhPX 2gXG yElr 0y4R
+              </p>
             </div>
             <Button onClick={wLoginBtn} className="w-full">
               Login to WordPress
             </Button>
-            
+
             <Card className="bg-yellow-50 border-yellow-200">
               <CardContent className="pt-4">
                 <h4 className="font-medium text-yellow-900 text-sm mb-2">
@@ -314,10 +381,12 @@ export const OptimizeSection = () => {
         <Card className="max-w-md mx-auto border-red-200">
           <CardContent className="pt-6 text-center">
             <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
-            <h3 className="font-semibold text-red-900 mb-2">No Content Found</h3>
+            <h3 className="font-semibold text-red-900 mb-2">
+              No Content Found
+            </h3>
             <p className="text-sm text-red-700">
-              We couldn't fetch any content from WordPress for this page. 
-              Please check the URL or try again later.
+              We couldn't fetch any content from WordPress for this page. Please
+              check the URL or try again later.
             </p>
           </CardContent>
         </Card>
