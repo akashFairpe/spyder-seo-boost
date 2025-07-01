@@ -1,4 +1,3 @@
-
 import {
   ArrowLeft,
   TrendingUp,
@@ -100,7 +99,6 @@ export const OptimizeSection = () => {
 
   const handleBackToDashboard = () => {
     setSelectedReport(null);
-    setCurrentReport(null);
     setActivePrompt(null);
     setPromptData({
       faqData: "",

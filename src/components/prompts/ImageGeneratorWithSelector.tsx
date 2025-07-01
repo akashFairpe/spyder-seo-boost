@@ -26,7 +26,13 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPrompt(e.target.value);
-  const handleModelChange = (value: string) => setAiModel(value);
+  
+  const handleModelChange = (value: string) => {
+    setAiModel(value);
+    // Reset state when model changes to show fresh generate option
+    setGeneratedPrompts([]);
+    setCurrentPromptIndex(0);
+  };
 
   const getPrompts = async (baseUrl: string, prompt: string, contentData: string, aiModel: string) => {
     try {
@@ -79,6 +85,7 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
         return;
       }
 
+      // Replace with new prompts and reset index
       setGeneratedPrompts(promptArr);
       setCurrentPromptIndex(0);
 
@@ -86,6 +93,7 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
       const firstImageResponse = await getGenImg(baseUrl, promptArr[0], content.title.rendered, aiModel);
 
       if (firstImageResponse?.images && firstImageResponse.images.length > 0) {
+        // Replace images with new generation
         setImages(firstImageResponse.images);
       } else {
         setError("No images generated. Try a different prompt.");
@@ -114,7 +122,8 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
       const imageResponse = await getGenImg(baseUrl, nextPrompt, content.title.rendered, aiModel);
 
       if (imageResponse?.images && imageResponse.images.length > 0) {
-        setImages(prev => [...imageResponse.images, ...prev]);
+        // Append new images to existing ones
+        setImages(prev => [...prev, ...imageResponse.images]);
         setCurrentPromptIndex(nextIndex);
       } else {
         setError("Failed to generate more images.");
@@ -162,7 +171,7 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
 
         <div className="flex gap-2">
           <Button onClick={handleImageGenerate} disabled={loading} className="flex-1">
-            {loading ? "Generating..." : "Generate First Image"}
+            {loading ? "Generating..." : "Generate"}
           </Button>
           
           {generatedPrompts.length > 0 && currentPromptIndex < generatedPrompts.length - 1 && (
@@ -172,7 +181,7 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
               variant="outline"
               className="flex-1"
             >
-              {loading ? "Generating..." : `Generate More (${generatedPrompts.length - currentPromptIndex - 1} left)`}
+              {loading ? "Generating..." : `Generate Next (${generatedPrompts.length - currentPromptIndex - 1} left)`}
             </Button>
           )}
         </div>
