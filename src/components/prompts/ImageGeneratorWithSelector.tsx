@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,9 +28,7 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
   
   const handleModelChange = (value: string) => {
     setAiModel(value);
-    // Reset state when model changes to show fresh generate option
-    setGeneratedPrompts([]);
-    setCurrentPromptIndex(0);
+    // Don't reset prompts immediately - only when new generation starts
   };
 
   const getPrompts = async (baseUrl: string, prompt: string, contentData: string, aiModel: string) => {
@@ -93,7 +90,7 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
       const firstImageResponse = await getGenImg(baseUrl, promptArr[0], content.title.rendered, aiModel);
 
       if (firstImageResponse?.images && firstImageResponse.images.length > 0) {
-        // Replace images with new generation
+        // Replace images with new generation (start fresh)
         setImages(firstImageResponse.images);
       } else {
         setError("No images generated. Try a different prompt.");
@@ -122,7 +119,7 @@ const ImageGeneratorWithSelector = ({ report, id, content }: ImageGeneratorProps
       const imageResponse = await getGenImg(baseUrl, nextPrompt, content.title.rendered, aiModel);
 
       if (imageResponse?.images && imageResponse.images.length > 0) {
-        // Append new images to existing ones
+        // Append new images to existing ones (don't replace)
         setImages(prev => [...prev, ...imageResponse.images]);
         setCurrentPromptIndex(nextIndex);
       } else {
