@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Plus, Globe, TrendingUp, BarChart3, Lightbulb, Search } from 'lucide-react';
+import { Plus, Globe, TrendingUp, BarChart3, Lightbulb, Search, FileSearch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import { useAppSharing } from '@/contexts/AppContext';
 import { getGoogleData, consoleReport } from '@/lib/api';
 import { DataPresentation } from './DataPresentation';
 import { SeoStrategy } from './SeoStrategy';
+import { SeoAudit } from './SeoAudit';
 
 export const DashboardContainer = () => {
   const { 
@@ -23,7 +24,7 @@ export const DashboardContainer = () => {
     setShowMessage
   } = useAppSharing();
 
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'optimization' | 'strategy'>('dashboard');
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'optimization' | 'strategy' | 'audit'>('dashboard');
 
   const fetchGoogleData = () => {
     getGoogleData(baseUrl, setWebsiteList, setIsLoading, setShowMessage);
@@ -48,6 +49,24 @@ export const DashboardContainer = () => {
           <h1 className="text-xl font-bold text-gray-900">SEO Strategy Research</h1>
         </div>
         <SeoStrategy baseUrl={baseUrl} />
+      </div>
+    );
+  }
+
+  if (activeSection === 'audit') {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Button 
+            variant="ghost" 
+            onClick={() => setActiveSection('dashboard')}
+            className="p-2"
+          >
+            ← Back to Dashboard
+          </Button>
+          <h1 className="text-xl font-bold text-gray-900">SEO Audit</h1>
+        </div>
+        <SeoAudit baseUrl={baseUrl} />
       </div>
     );
   }
@@ -160,31 +179,83 @@ export const DashboardContainer = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      {/* Main Action Buttons */}
-      <Card className="mb-6 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-orange-900 mb-2">SEO Tools</h3>
-              <p className="text-sm text-orange-700">Choose your optimization approach</p>
-            </div>
-            <div className="flex gap-3">
-              <Button 
-                onClick={() => setActiveSection('optimization')}
-                className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2"
-              >
-                <Lightbulb className="w-4 h-4" />
-                WordPress Optimization
-              </Button>
-              <Button 
-                onClick={() => setActiveSection('strategy')}
-                variant="outline"
-                className="border-orange-300 text-orange-700 hover:bg-orange-50 flex items-center gap-2"
-              >
-                <Search className="w-4 h-4" />
-                SEO Strategy
-              </Button>
-            </div>
+      {/* SEO Tools Menu */}
+      <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl text-blue-900">SEO Tools</CardTitle>
+          <CardDescription className="text-blue-700">
+            Choose your optimization approach and start improving your website's SEO
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* WordPress Optimization */}
+            <Card className="bg-white border-orange-200 hover:shadow-md transition-shadow cursor-pointer" 
+                  onClick={() => setActiveSection('optimization')}>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center text-center space-y-3">
+                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <Lightbulb className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900">WordPress Optimization</h3>
+                  <p className="text-sm text-gray-600">
+                    Connect Google Search Console and optimize your WordPress pages
+                  </p>
+                  <Button 
+                    className="bg-orange-600 hover:bg-orange-700 w-full"
+                    size="sm"
+                  >
+                    Get Started
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* SEO Strategy */}
+            <Card className="bg-white border-green-200 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => setActiveSection('strategy')}>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center text-center space-y-3">
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Search className="w-6 h-6 text-green-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900">SEO Strategy</h3>
+                  <p className="text-sm text-gray-600">
+                    Research keywords and develop content strategies for your niche
+                  </p>
+                  <Button 
+                    variant="outline"
+                    className="border-green-300 text-green-700 hover:bg-green-50 w-full"
+                    size="sm"
+                  >
+                    Start Research
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* SEO Audit */}
+            <Card className="bg-white border-purple-200 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => setActiveSection('audit')}>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center text-center space-y-3">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <FileSearch className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900">SEO Audit</h3>
+                  <p className="text-sm text-gray-600">
+                    Comprehensive analysis of your website's SEO performance
+                  </p>
+                  <Button 
+                    variant="outline"
+                    className="border-purple-300 text-purple-700 hover:bg-purple-50 w-full"
+                    size="sm"
+                  >
+                    Start Audit
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
       </Card>
