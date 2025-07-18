@@ -88,8 +88,9 @@ export const SeoAudit = ({ baseUrl }: SeoAuditProps) => {
         throw new Error(`Audit failed: ${response.status} ${response.statusText}`);
       }
       
-      const data = await response.json();
-      setAuditData(data);
+      const result = await response.json();
+      // Extract the actual SEO data from the nested response
+      setAuditData(result.data);
     } catch (error) {
       console.error('SEO Audit error:', error);
       setAuditError(error instanceof Error ? error.message : 'Failed to perform SEO audit');
