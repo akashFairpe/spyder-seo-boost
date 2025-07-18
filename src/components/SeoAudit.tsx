@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Globe, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Globe, AlertCircle, CheckCircle2, BarChart3, TrendingUp, Shield, Search } from 'lucide-react';
+import { SeoAuditResults } from './SeoAuditResults';
 
 interface SeoAuditProps {
   baseUrl: string;
@@ -15,6 +16,9 @@ export const SeoAudit = ({ baseUrl }: SeoAuditProps) => {
   const [isValidating, setIsValidating] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [isValidUrl, setIsValidUrl] = useState(false);
+  const [auditData, setAuditData] = useState(null);
+  const [isAuditing, setIsAuditing] = useState(false);
+  const [auditError, setAuditError] = useState('');
 
   const validateUrl = (inputUrl: string): boolean => {
     try {
@@ -65,14 +69,33 @@ export const SeoAudit = ({ baseUrl }: SeoAuditProps) => {
       return;
     }
 
-    setIsValidating(true);
+    setIsAuditing(true);
+    setAuditError('');
+    setAuditData(null);
     
-    // Simulate validation process
-    setTimeout(() => {
-      setIsValidating(false);
-      console.log('Starting SEO audit for:', url);
-      // TODO: Implement actual audit logic
-    }, 2000);
+    try {
+      const auditUrl = formatUrlForDisplay(url);
+      
+      const response = await fetch(`${baseUrl}/api/report-audit-seo`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: auditUrl }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Audit failed: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      setAuditData(data);
+    } catch (error) {
+      console.error('SEO Audit error:', error);
+      setAuditError(error instanceof Error ? error.message : 'Failed to perform SEO audit');
+    } finally {
+      setIsAuditing(false);
+    }
   };
 
   const formatUrlForDisplay = (inputUrl: string): string => {
@@ -141,18 +164,27 @@ export const SeoAudit = ({ baseUrl }: SeoAuditProps) => {
 
           <Button 
             onClick={handleStartAudit}
-            disabled={!isValidUrl || isValidating}
+            disabled={!isValidUrl || isAuditing}
             className="bg-purple-600 hover:bg-purple-700 w-full md:w-auto"
           >
-            {isValidating ? (
+            {isAuditing ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                Validating URL...
+                Running SEO Audit...
               </>
             ) : (
               'Start SEO Audit'
             )}
           </Button>
+
+          {auditError && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600 flex items-center gap-1">
+                <AlertCircle className="w-4 h-4" />
+                {auditError}
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -208,6 +240,11 @@ export const SeoAudit = ({ baseUrl }: SeoAuditProps) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* SEO Audit Results */}
+      {auditData && (
+        <SeoAuditResults data={auditData} isLoading={isAuditing} />
+      )}
     </div>
   );
 };
