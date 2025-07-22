@@ -111,8 +111,8 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
     return 'Other';
   }
 
-  // Get featured audits (first 11 with detailed info)
-  const featuredAudits = Object.values(data.audits).slice(0, 11);
+  // Get all audits for detailed info
+  const allAudits = Object.values(data.audits);
 
   return (
     <div className="space-y-6">
@@ -280,12 +280,12 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Info className="w-5 h-5 text-blue-500" />
-            Detailed Audit Analysis (Featured 11 Audits)
+            Detailed Audit Analysis (All {data.summary.totalAudits} Audits)
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Accordion type="single" collapsible className="w-full space-y-2">
-            {featuredAudits.map((audit) => (
+            {allAudits.map((audit) => (
               <AccordionItem key={audit.id} value={`audit-${audit.id}`} className="border rounded-lg">
                 <AccordionTrigger className="hover:no-underline px-4 py-3">
                   <div className="flex items-center justify-between w-full">
