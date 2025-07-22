@@ -283,24 +283,22 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
             Detailed Audit Analysis (All {data.summary.totalAudits} Audits)
           </CardTitle>
         </CardHeader>
-        <CardContent className="max-h-[600px] overflow-y-auto">
-          <Accordion type="single" collapsible className="w-full">
+        <CardContent>
+          <Accordion type="single" collapsible className="w-full space-y-2">
             {allAudits.map((audit) => (
-              <AccordionItem key={audit.id} value={`audit-${audit.id}`} className="border rounded-lg mb-2">
-                <AccordionTrigger className="hover:no-underline px-4 py-3 text-left">
-                  <div className="flex items-start justify-between w-full gap-4">
-                    <div className="flex items-start gap-3 min-w-0 flex-1">
-                      <div className="flex-shrink-0 mt-1">
-                        {getStatusIcon(audit.status)}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-sm leading-tight break-words">{audit.name}</h4>
-                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">{audit.description}</p>
+              <AccordionItem key={audit.id} value={`audit-${audit.id}`} className="border rounded-lg">
+                <AccordionTrigger className="hover:no-underline px-4 py-3">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      {getStatusIcon(audit.status)}
+                      <div className="text-left min-w-0 flex-1">
+                        <h4 className="font-medium text-base">{audit.name}</h4>
+                        <p className="text-sm text-gray-600 truncate">{audit.description}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-3 ml-4 flex-shrink-0">
                       <div className="text-right">
-                        <div className="text-xs font-medium whitespace-nowrap">
+                        <div className="text-sm font-medium">
                           {audit.score !== null ? `${audit.score}/${audit.weight}` : 'N/A'}
                         </div>
                       </div>
@@ -308,14 +306,14 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
                     </div>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-4 pb-4 border-t">
-                  <div className="space-y-3 pt-3">
+                <AccordionContent className="px-4 pb-4">
+                  <div className="space-y-4">
                     {/* Audit Score Visualization */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="flex-1 w-full">
+                    <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                      <div className="flex-1">
                         <div className="flex justify-between text-sm mb-2">
-                          <span className="font-medium">Score Progress</span>
-                          <span className="font-mono">{audit.score || 0}/{audit.weight}</span>
+                          <span>Score Progress</span>
+                          <span>{audit.score || 0}/{audit.weight}</span>
                         </div>
                         <Progress 
                           value={audit.score && audit.weight ? (audit.score / audit.weight) * 100 : 0} 
@@ -323,7 +321,7 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
                         />
                       </div>
                       <div className="text-center flex-shrink-0">
-                        <div className="text-lg font-bold text-gray-700">
+                        <div className="text-xl font-bold text-gray-700">
                           {audit.weight}
                         </div>
                         <div className="text-xs text-gray-500">Weight</div>
@@ -332,32 +330,32 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
 
                     {/* Detailed Data */}
                     {audit.data && Object.keys(audit.data).length > 0 && (
-                      <div className="space-y-2">
-                        <h5 className="font-semibold text-gray-900 text-sm">Technical Details:</h5>
-                        <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto bg-gray-50 p-3 rounded-lg">
-                          {Object.entries(audit.data).slice(0, 10).map(([key, value]) => {
+                      <div className="space-y-3">
+                        <h5 className="font-semibold text-gray-900">Technical Details:</h5>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+                          {Object.entries(audit.data).map(([key, value]) => {
                             // Skip complex objects and functions
                             if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
                               return null;
                             }
                             
                             return (
-                              <div key={key} className="flex flex-col sm:flex-row sm:items-center gap-2 p-2 bg-white border rounded text-xs">
-                                <div className="font-medium text-gray-700 min-w-0 flex-shrink-0 sm:w-1/3">
+                              <div key={key} className="p-3 bg-white border rounded-lg">
+                                <div className="font-medium text-sm text-gray-700 capitalize">
                                   {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                                 </div>
-                                <div className="min-w-0 flex-1">
+                                <div className="mt-1 text-sm">
                                   {typeof value === 'boolean' ? (
-                                    <Badge variant={value ? "default" : "destructive"} className="text-xs h-5">
+                                    <Badge variant={value ? "default" : "destructive"} className="text-xs">
                                       {value ? 'Yes' : 'No'}
                                     </Badge>
                                   ) : Array.isArray(value) ? (
-                                    <span className="text-gray-600 break-words text-xs">
-                                      {value.length > 0 ? value.slice(0, 2).join(', ') + (value.length > 2 ? '...' : '') : 'None'}
+                                    <span className="text-gray-600 break-words">
+                                      {value.length > 0 ? value.slice(0, 3).join(', ') + (value.length > 3 ? '...' : '') : 'None'}
                                     </span>
                                   ) : (
-                                    <span className="text-gray-600 break-words text-xs">
-                                      {String(value).length > 60 ? String(value).substring(0, 60) + '...' : String(value)}
+                                    <span className="text-gray-600 break-words">
+                                      {String(value).length > 100 ? String(value).substring(0, 100) + '...' : String(value)}
                                     </span>
                                   )}
                                 </div>
@@ -369,9 +367,9 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
                     )}
 
                     {/* Recommendations */}
-                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <h5 className="font-semibold text-blue-900 mb-2 text-sm">💡 Recommendations:</h5>
-                      <p className="text-xs text-blue-800 leading-relaxed">
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <h5 className="font-semibold text-blue-900 mb-2">💡 Recommendations:</h5>
+                      <p className="text-sm text-blue-800 leading-relaxed">
                         {audit.status === false 
                           ? `This audit failed. Focus on improving ${audit.name.toLowerCase()} by following SEO best practices for this area.`
                           : audit.status === true 
@@ -396,16 +394,14 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
             Complete Audit Summary ({data.summary.totalAudits} Audits)
           </CardTitle>
         </CardHeader>
-        <CardContent className="max-h-96 overflow-y-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 overflow-y-auto">
             {Object.values(data.audits).map((audit) => (
-              <div key={audit.id} className="flex items-center justify-between p-2 border rounded-lg hover:bg-gray-50 transition-colors">
+              <div key={audit.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <div className="flex-shrink-0">
-                    {getStatusIcon(audit.status)}
-                  </div>
+                  {getStatusIcon(audit.status)}
                   <div className="min-w-0 flex-1">
-                    <h4 className="font-medium text-xs leading-tight break-words">{audit.name}</h4>
+                    <h4 className="font-medium text-sm truncate">{audit.name}</h4>
                     <p className="text-xs text-gray-500 truncate">{audit.description}</p>
                   </div>
                 </div>
