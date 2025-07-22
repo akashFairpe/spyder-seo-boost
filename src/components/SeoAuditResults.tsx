@@ -215,7 +215,7 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
               <div key={issue.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
                 <div className="flex-1">
                   <h4 className="font-medium text-red-900">{issue.name}</h4>
-                  <p className="text-xs text-red-700 truncate">{issue.description}</p>
+                  <p className="text-xs text-red-700 truncate whitespace-normal break-words">{issue.description}</p>
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-bold text-red-600">{issue.weight}</div>
@@ -239,7 +239,7 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
               <div key={win.id} className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
                 <div className="flex-1">
                   <h4 className="font-medium text-green-900">{win.name}</h4>
-                  <p className="text-xs text-green-700 truncate">{win.description}</p>
+                  <p className="text-xs text-green-700 truncate whitespace-normal break-words">{win.description}</p>
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-bold text-green-600">{win.weight}</div>
