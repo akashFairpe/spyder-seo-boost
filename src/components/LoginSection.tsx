@@ -53,7 +53,7 @@ export const LoginSection = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
             <Chrome className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">SEO Spider</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">SEO Spyder</h1>
           <p className="text-gray-600">Optimize your blog pages with AI-powered insights</p>
         </div>
 
