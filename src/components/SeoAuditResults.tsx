@@ -284,19 +284,19 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" collapsible className="w-full space-y-2">
             {featuredAudits.map((audit) => (
-              <AccordionItem key={audit.id} value={`audit-${audit.id}`}>
-                <AccordionTrigger className="hover:no-underline">
-                  <div className="flex items-center justify-between w-full pr-4">
-                    <div className="flex items-center gap-3">
+              <AccordionItem key={audit.id} value={`audit-${audit.id}`} className="border rounded-lg">
+                <AccordionTrigger className="hover:no-underline px-4 py-3">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       {getStatusIcon(audit.status)}
-                      <div className="text-left">
-                        <h4 className="font-medium">{audit.name}</h4>
-                        <p className="text-sm text-gray-600">{audit.description}</p>
+                      <div className="text-left min-w-0 flex-1">
+                        <h4 className="font-medium text-base">{audit.name}</h4>
+                        <p className="text-sm text-gray-600 truncate">{audit.description}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 ml-4 flex-shrink-0">
                       <div className="text-right">
                         <div className="text-sm font-medium">
                           {audit.score !== null ? `${audit.score}/${audit.weight}` : 'N/A'}
@@ -306,8 +306,8 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
                     </div>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent>
-                  <div className="pt-4 space-y-4">
+                <AccordionContent className="px-4 pb-4">
+                  <div className="space-y-4">
                     {/* Audit Score Visualization */}
                     <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                       <div className="flex-1">
@@ -320,8 +320,8 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
                           className="h-2"
                         />
                       </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-gray-700">
+                      <div className="text-center flex-shrink-0">
+                        <div className="text-xl font-bold text-gray-700">
                           {audit.weight}
                         </div>
                         <div className="text-xs text-gray-500">Weight</div>
@@ -332,7 +332,7 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
                     {audit.data && Object.keys(audit.data).length > 0 && (
                       <div className="space-y-3">
                         <h5 className="font-semibold text-gray-900">Technical Details:</h5>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
                           {Object.entries(audit.data).map(([key, value]) => {
                             // Skip complex objects and functions
                             if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
@@ -350,12 +350,12 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
                                       {value ? 'Yes' : 'No'}
                                     </Badge>
                                   ) : Array.isArray(value) ? (
-                                    <span className="text-gray-600">
+                                    <span className="text-gray-600 break-words">
                                       {value.length > 0 ? value.slice(0, 3).join(', ') + (value.length > 3 ? '...' : '') : 'None'}
                                     </span>
                                   ) : (
-                                    <span className="text-gray-600">
-                                      {String(value).length > 50 ? String(value).substring(0, 50) + '...' : String(value)}
+                                    <span className="text-gray-600 break-words">
+                                      {String(value).length > 100 ? String(value).substring(0, 100) + '...' : String(value)}
                                     </span>
                                   )}
                                 </div>
@@ -369,7 +369,7 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
                     {/* Recommendations */}
                     <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                       <h5 className="font-semibold text-blue-900 mb-2">💡 Recommendations:</h5>
-                      <p className="text-sm text-blue-800">
+                      <p className="text-sm text-blue-800 leading-relaxed">
                         {audit.status === false 
                           ? `This audit failed. Focus on improving ${audit.name.toLowerCase()} by following SEO best practices for this area.`
                           : audit.status === true 
@@ -395,20 +395,21 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
             {Object.values(data.audits).map((audit) => (
               <div key={audit.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="flex items-center gap-2 flex-1">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
                   {getStatusIcon(audit.status)}
                   <div className="min-w-0 flex-1">
                     <h4 className="font-medium text-sm truncate">{audit.name}</h4>
                     <p className="text-xs text-gray-500 truncate">{audit.description}</p>
                   </div>
                 </div>
-                <div className="text-right ml-2">
-                  <div className="text-xs font-medium">
+                <div className="text-right ml-2 flex-shrink-0">
+                  <div className="text-xs font-medium mb-1">
                     {audit.score !== null ? `${audit.score}/${audit.weight}` : 'N/A'}
                   </div>
+                  {getStatusBadge(audit.status)}
                 </div>
               </div>
             ))}
