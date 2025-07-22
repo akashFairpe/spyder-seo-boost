@@ -395,7 +395,7 @@ export const SeoAuditResults = ({ data, isLoading }: SeoAuditResultsProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 overflow-y-auto">
             {Object.values(data.audits).map((audit) => (
               <div key={audit.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
